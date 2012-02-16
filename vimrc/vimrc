@@ -1,0 +1,123 @@
+" Ruoyan Wong's vimrc
+"
+
+"""""""""""""""""""""""""""""""""""""""
+"        General Settings 
+"                 
+"""""""""""""""""""""""""""""""""""""""
+
+if has("gui_running")
+    set mouse=a
+    colorscheme molokai
+    let g:molokai_original = 0
+    set guifont=Consolas
+    set guifontwide=Consolas
+else
+    colorscheme vibrantink
+endif
+
+set nocompatible    " Use Vim defaults instead of 100% vi compatibility
+set number          " Display line number
+set incsearch       " Incremental search 
+set ignorecase      " Ignore case
+set confirm         " 
+set history=50      " Keep 50 lines of command line history
+set showcmd         " Display incomplete commands
+set autoread        " Auto read when file is changed from outside
+set showmatch       " Show matching bracets when text indicator is over them
+set novisualbell    " No sound on errors
+syntax on           " Syntax highlight
+set cursorline      " Cursor current line
+set encoding=utf-8  " Set default-encoding to utf-8
+
+" Set tab setting
+set smarttab
+set expandtab
+set shiftwidth=4
+set tabstop=4
+
+" Indent setting
+set autoindent                     " Auto indent
+set smartindent                    " Smart indent 
+set cindent                        " C/C++ indent style
+
+" Disable bakup and swap file
+set nobackup
+set noswapfile
+set nowritebackup
+
+" Enable fold and space key to switch fold
+set foldenable
+set foldmethod=manual
+nnoremap @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')
+
+" Set ststusline
+set laststatus=2
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
+
+" Backspace and cursor keys wrap to previous/next line
+set backspace=indent,eol,start 
+set whichwrap+=<,>,[,]
+
+" Map auto complete of (, ", ', [
+
+"""""""""""""""""""""""""""""""""""""""
+"       Alias and hotkey
+"                 
+"""""""""""""""""""""""""""""""""""""""
+
+iab ryw Ruoyan Wong
+iab wry wangruoyan@snda.com
+iab ggg kid.xiyang@gmail.com
+
+map  <silent><F12> <ESC>:tabnew<CR>
+" map  <silent><F5>  <ESC>:NEXTCOLOR<CR>
+" map  <silent><F6>  <ESC>:PREVCOLOR<CR>
+
+"""""""""""""""""""""""""""""""""""""""
+"       Addons Configuration
+"                 
+"""""""""""""""""""""""""""""""""""""""
+
+" pathogen.vim
+" https://github.com/tpope/vim-pathogen
+"
+call pathogen#infect('stuff')
+
+" Enable filetype plugin
+filetype plugin on
+filetype indent on
+
+" taglist.vim
+" https://github.com/vim-scripts/taglist.vim
+"
+nmap <silent><F2> <ESC>:TlistToggle<CR>
+let Tlist_Show_One_File           = 0
+let Tlist_Exit_OnlyWindow         = 1
+let Tlist_File_Fold_Auto_Close    = 1
+let Tlist_GainFocus_On_ToggleOpen = 0
+let Tlist_Auto_Open               = 0
+let Tlist_Display_Prototype       = 0
+let Tlist_Close_On_Select         = 1
+" let Tlist_Use_Right_Window      = 1
+
+" minibufexpl.vim
+" http://www.vim.org/scripts/script.php?script_id=159
+"
+" Nothing to config.
+
+" pydiction.vim
+" http://www.vim.org/scripts/script.php?script_id=850
+"
+let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict' 
+
+" bash-support
+" http://www.vim.org/scripts/script.php?script_id=365
+"
+let g:BASH_AuthorName   = 'Ruoyan Wong'
+let g:BASH_Email        = 'kid.xiyang@gmail.com'
+let g:BASH_Company      = 'rywang.net'
+
+if (has("win32") || has("win64") || has("win32unix"))
+    let Tlist_Ctags_Cmd = 'C:\Windows\system32\ctags.exe'
+endif
