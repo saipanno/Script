@@ -32,4 +32,4 @@ noremap <leader>z :tabopen www.zhihu.com<cr>
 noremap y Y
 noremap Y y
 
-noremap <leader>s :so "C:/Users/wangruoyan/_pentadactylrc"<cr>
+noremap <leader>s :so "C:/Users/saipanno/_pentadactylrc"<cr>
