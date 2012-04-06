@@ -1,0 +1,35 @@
+"1.0rc1
+" Author: saipanno
+
+loadplugins '\.(js|penta)$'
+group user
+
+" vim: set ft=pentadactyl:
+
+set guioptions=brns
+map <C-Up>   :set guioptions+=B<cr>
+map <C-Down> :set guioptions-=B<cr>
+
+set wildoptions=auto
+
+set defsearch=google
+
+set visualbell
+
+set mapleader=','
+noremap <leader>a :addons<cr>
+noremap <leader>d :downloads<cr>
+noremap <leader>r :restart<cr>
+
+noremap <leader>b :tabopen www.baidu.com<cr>
+noremap <leader>g :tabopen www.google.com/ncr<cr>
+noremap <leader>m :tabopen www.gmail.com<cr>
+noremap <leader>i :tabopen saipanno.com<cr>
+noremap <leader>w :tabopen weibo.com<cr>
+noremap <leader>v :tabopen www.v2ex.com<cr>
+noremap <leader>z :tabopen www.zhihu.com<cr>
+
+noremap y Y
+noremap Y y
+
+noremap <leader>s :so "C:/Users/wangruoyan/_pentadactylrc"<cr>
