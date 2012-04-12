@@ -7,11 +7,8 @@
 """""""""""""""""""""""""""""""""""""""
 
 if has("gui_running")
-    set mouse=a
     colorscheme molokai
     let g:molokai_original = 0
-    set guifont=Consolas
-    set guifontwide=Consolas
 else
     colorscheme vibrantink
 endif
@@ -88,36 +85,7 @@ call pathogen#infect('stuff')
 filetype plugin on
 filetype indent on
 
-" taglist.vim
-" https://github.com/vim-scripts/taglist.vim
-"
-nmap <silent><F2> <ESC>:TlistToggle<CR>
-let Tlist_Show_One_File           = 0
-let Tlist_Exit_OnlyWindow         = 1
-let Tlist_File_Fold_Auto_Close    = 1
-let Tlist_GainFocus_On_ToggleOpen = 0
-let Tlist_Auto_Open               = 0
-let Tlist_Display_Prototype       = 0
-let Tlist_Close_On_Select         = 1
-" let Tlist_Use_Right_Window      = 1
-
-" minibufexpl.vim
-" http://www.vim.org/scripts/script.php?script_id=159
-"
-" Nothing to config.
-
 " pydiction.vim
 " http://www.vim.org/scripts/script.php?script_id=850
 "
 let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict' 
-
-" bash-support
-" http://www.vim.org/scripts/script.php?script_id=365
-"
-let g:BASH_AuthorName   = 'Ruoyan Wong'
-let g:BASH_Email        = 'kid.xiyang@gmail.com'
-let g:BASH_Company      = 'rywang.net'
-
-if (has("win32") || has("win64") || has("win32unix"))
-    let Tlist_Ctags_Cmd = 'C:\Windows\system32\ctags.exe'
-endif
