@@ -14,3 +14,7 @@ alias history='fc -l 1'
 alias lsa='ls -lah'
 alias l='ls -la'
 alias ll='ls -l'
+
+alias p='cd /home/Project'
+alias d='cd /home/Downloads'
+alias s='cd /home/Package'
