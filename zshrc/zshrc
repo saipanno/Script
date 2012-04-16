@@ -1,7 +1,7 @@
 ZSH=$HOME/.zsh
 
 # set plugin list
-plugins=(git debian github python)
+plugins=(git github python)
 
 # add a function path
 fpath=($ZSH/functions $ZSH/completions $fpath)
