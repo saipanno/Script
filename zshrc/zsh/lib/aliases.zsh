@@ -15,6 +15,5 @@ alias lsa='ls -lah'
 alias l='ls -la'
 alias ll='ls -l'
 
-alias p='cd /home/Project'
-alias d='cd /home/Downloads'
-alias s='cd /home/Package'
+alias p='cd ~/Project'
+alias d='cd ~/Downloads'

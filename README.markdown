@@ -5,3 +5,8 @@
     2.zshrc
     3.vimperatorrc
 </MTMarkdownOptions>
+
+
+
+ln -s ~/Dropbox/Project/Profile.d/script ~/bin
+ln -s ~/Dropbox/Project ~/Project
