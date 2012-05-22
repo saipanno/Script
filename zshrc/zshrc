@@ -10,7 +10,12 @@ for config_file ($ZSH/lib/*.zsh) source $config_file
 autoload -U compinit
 compinit -i
 
-ZSH_THEME="saipanno"
+if [ "$HOSTNAME" = "clytie.saipanno.com" ];then
+    ZSH_THEME="crunch"
+else
+    ZSH_THEME="saipanno"
+fi
+
 if [ "$ZSH_THEME" = "random" ];then
     themes=($ZSH/themes/*.theme)
     N=${#themes[@]}
