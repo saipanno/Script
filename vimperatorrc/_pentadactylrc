@@ -22,6 +22,7 @@ noremap <leader>d :downloads<cr>
 noremap <leader>r :restart<cr>
 
 noremap <leader>b :tabopen www.baidu.com<cr>
+noremap <leader>d :tabopen bbs.d.163.com<cr>
 noremap <leader>g :tabopen www.google.com/ncr<cr>
 noremap <leader>m :tabopen www.gmail.com<cr>
 noremap <leader>n :tabopen bbs.ngacn.cc<cr>
