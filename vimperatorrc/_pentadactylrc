@@ -24,6 +24,7 @@ noremap <leader>r :restart<cr>
 noremap <leader>b :tabopen www.baidu.com<cr>
 noremap <leader>g :tabopen www.google.com/ncr<cr>
 noremap <leader>m :tabopen www.gmail.com<cr>
+noremap <leader>n :tabopen bbs.ngacn.cc<cr>
 noremap <leader>i :tabopen saipanno.com<cr>
 noremap <leader>w :tabopen weibo.com<cr>
 noremap <leader>v :tabopen www.v2ex.com<cr>
