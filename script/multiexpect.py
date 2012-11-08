@@ -12,7 +12,16 @@
 
 import sys
 import subprocess
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool
+
+def usage():
+
+    print """
+    Usage:
+
+        python multiexpect.py expect_commands.exp host-address.txt [task_file]"
+
+    """
 
 def start_expect_script(command):
     try:
@@ -29,7 +38,7 @@ if __name__ == '__main__':
         script = sys.argv[1]
         target = sys.argv[2]
     except Exception, e:
-        print "Usage:\n    python multiexpect.py expect_commands.exp host-address.txt [task_file]"
+        usage()
         sys.exit(1)
 
     file = open(target)
@@ -48,6 +57,9 @@ if __name__ == '__main__':
             command = 'expect %s %s %s' % (script, host[0], tasks)
         elif len(sys.argv) == 3:
             command = 'expect %s %s' % (script, host[0])
+        else:
+            usage()
+            sys.exit(1)
         pool.apply_async(start_expect_script, (command, ))
 
     pool.close()
