@@ -4,7 +4,7 @@ set timeout 60
 
 set USER "USER"
 set PASSWORD "PASSWORD"
-set KEYGEN "/home/saipanno/.ssh/id_rsa.ku6cdn"
+set KEYGEN "$env(HOME)/.ssh/id_rsa.ku6cdn"
 
 set PROMPT "#"
 
