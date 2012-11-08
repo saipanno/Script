@@ -1,0 +1,70 @@
+#!/usr/bin/expect -f
+
+set timeout 60
+
+set USER "USER"
+set PASSWORD "PASSWORD"
+set KEYGEN "/home/saipanno/.ssh/id_rsa.ku6cdn"
+
+set PROMPT "#"
+
+set ADDRESS [lindex $argv 0]
+set PORT "22"
+
+set LOGDIR "~/logging"
+system mkdir -p $LOGDIR
+
+if { $argc!=1 } {
+        puts stderr "Usage: $argv0 address"
+        exit
+}
+
+#spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $PORT $USER@$ADDRESS
+spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN -p $PORT $USER@$ADDRESS
+
+expect {
+	timeout {
+        log_file $LOGDIR/timeout.txt
+        send_user "$ADDRESS\n"
+		exit
+	}
+    "*?assword:*" {
+        send "$PASSWORD\n"
+        exp_continue
+    }
+    "No route to host" {
+        log_file $LOGDIR/noroute.txt
+        send_user "$ADDRESS\n"
+        exit
+    }
+    "Connection refused" {
+        log_file $LOGDIR/refused.txt
+        send_user "$ADDRESS\n"
+        exit
+    }
+    "Connection closed" {
+        log_file $LOGDIR/closed.txt
+        send_user "$ADDRESS\n"
+		exit
+    }
+    "Connection reset" {
+        log_file $LOGDIR/reset.txt
+        send_user "$ADDRESS\n"
+		exit
+    }
+	"Connection timed out" {
+        log_file $LOGDIR/timeout.txt
+        send_user "$ADDRESS\n"
+		exit
+	}
+	"Permission denied" {
+        log_file $LOGDIR/nopasswd.txt
+        send_user "$ADDRESS\n"
+		exit
+	}
+    "$PROMPT" {
+        log_file $LOGDIR/success.txt
+        send_user "$ADDRESS\n"
+    }
+}
+expect eof

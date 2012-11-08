@@ -1,0 +1,62 @@
+#!/usr/bin/expect -f
+
+set timeout 60
+
+set USER "USER"
+set PASSWORD "PASSWORD"
+set KEYGEN "/home/saipanno/.ssh/id_rsa"
+
+set PROMPT "#"
+
+set ADDRESS [lindex $argv 0]
+set PORT "22"
+
+set LOGDIR "~/logging"
+system mkdir -p $LOGDIR
+
+if { $argc!=1 } {
+        puts stderr "Usage: $argv0 address"
+        exit
+}
+
+#spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $PORT $USER@$ADDRESS
+spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN -p $PORT $USER@$ADDRESS
+
+expect {
+	timeout {
+	    puts "Connection timed out"
+		exit
+	}
+    "*?assword:*" {
+        send "$PASSWORD\n"
+        puts "\nKey authentication failed, use password retry."
+        exp_continue
+    }
+    "No route to host" {
+        puts "No route to host"
+        exit
+    }
+    "Connection refused" {
+        puts "Connection refused"
+        exit
+    }
+    "Connection closed" {
+        puts "Connection closed"
+		exit
+    }
+    "Connection reset" {
+        puts "Connection reset"
+		exit
+    }
+	"Connection timed out" {
+	    puts "Connection timed out"
+		exit
+	}
+	"Permission denied" {
+        puts "Permission denied"
+		exit
+	}
+    "$PROMPT" {
+        interact
+    }
+}
