@@ -2,25 +2,20 @@
 
 set timeout 60
 
-set USER "USER"
-set PASSWORD "PASSWORD"
+set USER "root"
+set PASSWORD "password"
 set KEYGEN "$env(HOME)/.ssh/id_rsa"
 
 set PROMPT "#"
 
 set ADDRESS [lindex $argv 0]
-set PORT "22"
-
-set LOGDIR "~/logging"
-system mkdir -p $LOGDIR
 
 if { $argc!=1 } {
         puts stderr "Usage: $argv0 address"
         exit
 }
 
-#spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $PORT $USER@$ADDRESS
-spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN -p $PORT $USER@$ADDRESS
+spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN $USER@$ADDRESS
 
 expect {
 	timeout {

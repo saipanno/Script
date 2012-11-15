@@ -4,13 +4,14 @@
 #
 #    multichecking,
 #
-#          Support ssh, ping and socket check.
+#          Support ping and socket check.
 #
 #
 #    Created by Ruoyan Wong on 2012/11/04.
 
-
+import os
 import sys
+import time
 import socket
 import subprocess
 from multiprocessing import Pool, Manager
@@ -43,12 +44,20 @@ def socket_checking(address, port, result, TIMEOUT):
 if __name__ == '__main__':
 
     # Globals Variable.
-    COUNT = 4
-    TIMEOUT = 1
-    MAX_PROCESSES = 100
+    COUNT = 5
+    TIMEOUT = 2
+    MAX_PROCESSES = 250
 
-    item   = sys.argv[1]
-    target = sys.argv[2]
+    try:
+        item   = sys.argv[1]
+        target = sys.argv[2]
+    except Exception:
+        print "Usage:\n    python multichecking.py socket|ping host-address.txt"
+        sys.exit(1)
+
+    bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
+    subprocess.call('mkdir -p %s' % bakup_logging_dir, shell=True)
+    subprocess.call('mv -f %s/logging/*.txt %s' % (os.environ['HOME'], bakup_logging_dir), shell=True)       
 
     manager = Manager()
     kitten = manager.dict()
@@ -75,8 +84,8 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    result_log_file = '%s.result' % target
+    result_log_file = '%s/logging/checking.txt' % os.environ['HOME']
     file = open(result_log_file, 'w')
     for address in kitten.keys():
-        file.write('%s: %s\n' % (address, kitten[address]))
+        file.write('%s : %s\n' % (address, kitten[address]))
     file.close()
