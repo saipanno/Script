@@ -4,7 +4,7 @@
 #
 #    multichecking,
 #
-#          Support ping and socket check.
+#          Support ping and socket check. 
 #
 #
 #    Created by Ruoyan Wong on 2012/11/04.
