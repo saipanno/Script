@@ -54,7 +54,7 @@ if __name__ == '__main__':
         elif len(sys.argv) == 3:
             command = 'expect %s %s' % (script, host[0])
         else:
-            print "Usage:\n    python multiexpect.py expect_commands.exp host-address.txt [task_file]"
+            print "Usage:\n\tpython multiexpect.py expect_commands.exp host-address.txt [task_file]"
             sys.exit(1)
         pool.apply_async(start_expect_script, (command, ))
 

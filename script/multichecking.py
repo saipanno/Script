@@ -52,7 +52,7 @@ if __name__ == '__main__':
         item   = sys.argv[1]
         target = sys.argv[2]
     except Exception:
-        print "Usage:\n    python multichecking.py socket|ping host-address.txt"
+        print "Usage:\n\tpython multichecking.py socket|ping host-address.txt"
         sys.exit(1)
 
     bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
