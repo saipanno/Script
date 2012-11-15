@@ -30,7 +30,7 @@ if __name__ == '__main__':
         script = sys.argv[1]
         target = sys.argv[2]
     except Exception:
-        print "Usage:\n    python multiexpect.py expect_commands.exp host-address.txt [task_file]"
+        print "Usage:\n\tpython multiexpect.py expect_commands.exp host-address.txt [task_file]"
         sys.exit(1)
 
     bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
