@@ -23,7 +23,7 @@ def start_expect_script(command):
 
 if __name__ == '__main__':
 
-    # Globals Variable.
+    # Globals.
     MAX_PROCESSES = 250
 
     try:

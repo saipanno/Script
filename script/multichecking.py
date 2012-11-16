@@ -29,13 +29,14 @@ def connectivity_checking(address, result, COUNT, TIMEOUT):
 def socket_checking(address, port, result, TIMEOUT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(TIMEOUT)
-    status = 0
     try:
         s.connect((address, port))
     except socket.timeout:
         status = 1
     except Exception:
         status = -1
+    else:
+        status = 0
     finally:
         s.close()
         result[address] = status
@@ -43,7 +44,7 @@ def socket_checking(address, port, result, TIMEOUT):
 
 if __name__ == '__main__':
 
-    # Globals Variable.
+    # Globals.
     COUNT = 5
     TIMEOUT = 2
     MAX_PROCESSES = 250
