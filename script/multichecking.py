@@ -20,7 +20,7 @@ from multiprocessing import Pool, Manager
 def connectivity_checking(address, result, COUNT, TIMEOUT):
     command = 'ping -c%s -W%s %s > /dev/null 2>&1' % (COUNT, TIMEOUT, address)
     try:
-        connectivity = subprocess.call(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        connectivity = subprocess.call(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     except Exception:
         connectivity = -1
     finally:
@@ -56,10 +56,10 @@ if __name__ == '__main__':
         sys.exit(1)
 
     bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
-    subprocess.call('mkdir -p %s > /dev/null 2>&1' % bakup_logging_dir, shell=True)
-    subprocess.call('mv -f %s/logging/*.ssh %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    subprocess.call('mv -f %s/logging/*.txt %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    subprocess.call('mv -f %s/logging/*.ping %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
+    subprocess.call('mkdir -p %s' % bakup_logging_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.call('mv -f %s/logging/*.ssh %s' % (os.environ['HOME'], bakup_logging_dir), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.call('mv -f %s/logging/*.txt %s' % (os.environ['HOME'], bakup_logging_dir), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.call('mv -f %s/logging/*.ping %s' % (os.environ['HOME'], bakup_logging_dir), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
     manager = Manager()
     kitten = manager.dict()
