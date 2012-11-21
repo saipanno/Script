@@ -17,7 +17,7 @@ from multiprocessing import Pool, Manager
 
 def start_expect_script(command):
     try:
-        do = subprocess.call(command, shell=True)
+        do = subprocess.call(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception:
         pass
 
