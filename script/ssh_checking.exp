@@ -3,9 +3,8 @@
 set timeout 60
 
 set USER "root"
-set PASSWORD(0) "XXXXXX"
-set PASSWORD(1) "XXXXXX"
 set KEYGEN "$env(HOME)/.ssh/id_rsa"
+array set PASSWORD [list 0 XXXXXX 1 YYYYYY 2 ZZZZZZ]
 
 set count 0
 set PROMPT "#"
