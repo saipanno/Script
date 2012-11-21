@@ -20,7 +20,7 @@ from multiprocessing import Pool, Manager
 def connectivity_checking(address, result, COUNT, TIMEOUT):
     command = 'ping -c%s -W%s %s > /dev/null 2>&1' % (COUNT, TIMEOUT, address)
     try:
-        connectivity = subprocess.call(command, shell=True)
+        connectivity = subprocess.call(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception:
         connectivity = -1
     finally:
