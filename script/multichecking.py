@@ -1,10 +1,10 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #
 #    multichecking,
 #
-#          Support ping and socket check. 
+#          Support ping and socket check.
 #
 #
 #    Created by Ruoyan Wong on 2012/11/04.
@@ -18,9 +18,9 @@ from multiprocessing import Pool, Manager
 
 
 def connectivity_checking(address, result, COUNT, TIMEOUT):
-    command = 'ping -c%s -W%s %s' % (COUNT, TIMEOUT, address)
+    command = 'ping -c%s -W%s %s > /dev/null 2>&1' % (COUNT, TIMEOUT, address)
     try:
-        connectivity = subprocess.call(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        connectivity = subprocess.call(command, shell=True)
     except Exception:
         connectivity = -1
     finally:
@@ -29,14 +29,13 @@ def connectivity_checking(address, result, COUNT, TIMEOUT):
 def socket_checking(address, port, result, TIMEOUT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(TIMEOUT)
+    status = 0
     try:
         s.connect((address, port))
     except socket.timeout:
         status = 1
     except Exception:
         status = -1
-    else:
-        status = 0
     finally:
         s.close()
         result[address] = status
@@ -44,7 +43,7 @@ def socket_checking(address, port, result, TIMEOUT):
 
 if __name__ == '__main__':
 
-    # Globals.
+    # Globals Variable.
     COUNT = 5
     TIMEOUT = 2
     MAX_PROCESSES = 250
@@ -53,12 +52,14 @@ if __name__ == '__main__':
         item   = sys.argv[1]
         target = sys.argv[2]
     except Exception:
-        print "Usage:\n\tpython multichecking.py socket|ping host-address.txt"
+        print "Usage:\n    python multichecking.py socket|ping host-address.txt"
         sys.exit(1)
 
     bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
-    subprocess.call('mkdir -p %s' % bakup_logging_dir, shell=True)
-    subprocess.call('mv -f %s/logging/*.txt %s' % (os.environ['HOME'], bakup_logging_dir), shell=True)       
+    subprocess.call('mkdir -p %s > /dev/null 2>&1' % bakup_logging_dir, shell=True)
+    subprocess.call('mv -f %s/logging/*.ssh %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
+    subprocess.call('mv -f %s/logging/*.txt %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
+    subprocess.call('mv -f %s/logging/*.ping %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
 
     manager = Manager()
     kitten = manager.dict()

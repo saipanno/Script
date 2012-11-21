@@ -3,13 +3,15 @@
 set timeout 30
 
 set USER "root"
-set PASSWORD "password"
+set PASSWORD(0) "XXXXXX"
+set PASSWORD(1) "XXXXXX"
 set KEYGEN "$env(HOME)/.ssh/id_rsa"
 
 set PROMPT "#"
 
 set ADDRESS [lindex $argv 0]
 set SCRIPT [lindex $argv 1]
+set PORT "22"
 set LOGDIR "$env(HOME)/logging"
 
 if { $argc<2 } {
@@ -19,17 +21,22 @@ if { $argc<2 } {
 
 set FILE [ open $SCRIPT ]
 
-spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN $USER@$ADDRESS
+spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN -p $PORT $USER@$ADDRESS
 
 expect {
-	timeout {
-        log_file $LOGDIR/$ADDRESS.txt
-		send_user "timeout\n"
-		exit
-	}
-    "*?assword:*" {
-        send "$PASSWORD\n"
+    "Permission denied" {
+        incr count
         exp_continue
+    }
+    "*?assword:*" {
+        if [info exists PASSWORD($count)] {
+            send "$PASSWORD($count)\r"
+            exp_continue
+        } else {
+            log_file $LOGDIR/nopasswd.txt
+            send_user "$ADDRESS\n"
+            exit
+        }
     }
     "No route to host" {
         log_file $LOGDIR/$ADDRESS.txt
@@ -56,17 +63,17 @@ expect {
 		send_user "closed\n"
         exit
     } 
-	"Permission denied" {
-        log_file $LOGDIR/$ADDRESS.txt
-		send_user "nopasswd\n"
-		exit
-	}
     "$PROMPT" {
         log_file $LOGDIR/$ADDRESS.txt
         while { [ gets $FILE CMD ]>=0 } {
             send -- "$CMD\n"
         }
     }
+	timeout {
+        log_file $LOGDIR/$ADDRESS.txt
+		send_user "timeout\n"
+		exit
+	}
 }
 close $FILE
 expect eof

@@ -29,45 +29,35 @@ expect {
             send "$PASSWORD($count)\r"
             exp_continue
         } else {
-            log_file $LOGDIR/nopasswd.txt
-            send_user "$ADDRESS\n"
+            puts "\nAuthentication failed, quit."
             exit
         }
     }
     "No route to host" {
-        log_file $LOGDIR/noroute.txt
-        send_user "$ADDRESS\n"
+        puts "No route to host"
         exit
     }
     "Connection refused" {
-        log_file $LOGDIR/refused.txt
-        send_user "$ADDRESS\n"
+        puts "Connection refused"
         exit
     }
     "Connection closed" {
-        log_file $LOGDIR/closed.txt
-        send_user "$ADDRESS\n"
+        puts "Connection closed"
 		exit
     }
     "Connection reset" {
-        log_file $LOGDIR/reset.txt
-        send_user "$ADDRESS\n"
+        puts "Connection reset"
 		exit
     }
 	"Connection timed out" {
-        log_file $LOGDIR/timeout.txt
-        send_user "$ADDRESS\n"
+	    puts "Connection timed out"
 		exit
 	}
     "$PROMPT" {
-        log_file $LOGDIR/success.txt
-        send_user "$ADDRESS\n"
+        interact
     }
 	timeout {
-        log_file $LOGDIR/timeout.txt
-        send_user "$ADDRESS\n"
+	    puts "Connection timed out"
 		exit
 	}
 }
-
-expect eof
