@@ -8,7 +8,13 @@ switch -regexp $argv0 {
         set info(port)   "22" 
         set info(user)   "root"
         set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
-        set info(shadow) "$env(HOME)/.shadow.ku"
+        set info(shadow) "$env(HOME)/.shadow/password.ku"
+    }
+    ssh.co {
+        set info(user)   "root"
+        set info(port)   "7035" 
+        set info(secret) "$env(HOME)/.ssh/id_rsa"
+        set info(shadow) "$env(HOME)/.shadow/password.co"
     }
 }
 
