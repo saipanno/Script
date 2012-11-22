@@ -20,7 +20,7 @@ switch -regexp $argv0 {
     }
 }
 
-# 解析参数，存入info数组中
+# 参数解析
 if { $argc!=1 } {
     for {set x 0} {$x<$argc} {incr x 2} {
         set opt [lindex $argv $x]
@@ -38,7 +38,6 @@ if { $argc!=1 } {
     set info(address) [lindex $argv 0]
 }
 
-# 判断参数传入是否符合要求，如无address参数传入则打印usage帮助并退出
 if { ![info exists info(address)] } {
     puts "usage: "
     puts "  $argv0 address"
@@ -46,7 +45,7 @@ if { ![info exists info(address)] } {
     exit
 }
 
-# 根据用户传递参数设定ssh命令
+# 根据用户传递参数生成ssh调用参数
 set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no"
 foreach {key value} [array get info] {
     if {$key == "user"} { 
@@ -58,7 +57,7 @@ foreach {key value} [array get info] {
     }   
 }
 
-# 从shadow文件中读取用户密码
+# 从shadow文件中读取用户密码到数组中
 set count 0
 set file [open $info(shadow) r]
 while { [ gets $file oneline ]>=0 } {
@@ -67,7 +66,7 @@ while { [ gets $file oneline ]>=0 } {
 }
 close $file
 
-# 使用{*}关闭spawn的参数异常情况
+# 使用{*}关闭spawn调用变量时的异常情况
 spawn {*}$parameters $info(address)
 
 set count 0
