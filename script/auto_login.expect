@@ -1,0 +1,72 @@
+#!/usr/bin/expect -f
+
+set timeout 10
+set PROMPT "(%|>|#|\\\$) $"
+
+switch -regexp $argv0 {
+    ssh.ku { 
+        set info(port)   "22" 
+        set info(user)   "root"
+        set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
+        set info(shadow) "$env(HOME)/.shadow.ku"
+    }
+}
+
+if { $argc!=1 } {
+    for {set x 0} {$x<$argc} {incr x 2} {
+        set opt [lindex $argv $x]
+        set nexts [expr {$x + 1}]
+        switch -glob $opt {
+            u { set info(user) [lindex $argv $nexts] }
+            p { set info(port) [lindex $argv $nexts] }
+            i { set info(secret) [lindex $argv $nexts] }
+            s { set info(shadow) [lindex $argv $nexts] }
+            h { set info(address) [lindex $argv $nexts] }
+        }
+        if { [expr {$nexts + 1}] > $argc } break 
+    }
+} else {
+    set info(address) [lindex $argv 0]
+}
+
+if { ![info exists info(address)] | ![info exists info(port)] | ![info exists info(user)]} {
+    puts "usage: "
+    puts "  $argv0 address"
+    puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[h address\] \[s shadow\]"
+    exit
+}
+
+set count 0
+set file [open $info(shadow) r]
+while { [ gets $file oneline ]>=0 } {
+    set password($count) $oneline
+    incr count
+}
+close $file
+
+if [info exists info(secret)] {
+    spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $info(port) -i $info(secret) $info(user)@$info(address)
+} else {
+    spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $info(port) $info(user)@$info(address)
+}
+
+set count 0
+expect {
+	"Permission denied" {
+        incr x 
+        exp_continue
+    }
+    "*?assword:*" {
+        if [info exists password($count)] {
+            send "$password($count)\r"
+            exp_continue
+        } else {
+            puts "\nAuthentication failed, quit."
+            exit
+        }
+    }
+    -re "$PROMPT" {
+        interact
+    }
+    timeout { exit }
+}
