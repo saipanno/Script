@@ -29,11 +29,22 @@ if { $argc!=1 } {
     set info(address) [lindex $argv 0]
 }
 
-if { ![info exists info(address)] | ![info exists info(port)] | ![info exists info(user)]} {
+if { ![info exists info(address)] } {
     puts "usage: "
     puts "  $argv0 address"
     puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[h address\] \[s shadow\]"
     exit
+}
+
+set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no"
+foreach {key value} [array get info] {
+    if {$key == "user"} { 
+        append parameters " " "-l $value" 
+    } elseif {$key == "port"} { 
+        append parameters " " "-p $value"
+    } elseif {$key == "secret"} {
+        append parameters " " "-i $value"
+    }   
 }
 
 set count 0
@@ -44,11 +55,7 @@ while { [ gets $file oneline ]>=0 } {
 }
 close $file
 
-if [info exists info(secret)] {
-    spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $info(port) -i $info(secret) $info(user)@$info(address)
-} else {
-    spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -p $info(port) $info(user)@$info(address)
-}
+spawn {*}$parameters $info(address)
 
 set count 0
 expect {
