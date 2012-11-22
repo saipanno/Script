@@ -53,7 +53,7 @@ if [info exists info(secret)] {
 set count 0
 expect {
 	"Permission denied" {
-        incr x 
+        incr count
         exp_continue
     }
     "*?assword:*" {
