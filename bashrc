@@ -7,8 +7,6 @@ shopt -s histappend
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-PS1='\[\033[35m\]\t\[\033[m\] - \[\e[36m\]saipanno\[\e[m\]@\[\033[32m\]\h\[\033[m\] \[\e[34m\]\w\[\e[m\] \[\e[32m\]\$ \[\e[m\]'
-
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
@@ -28,38 +26,27 @@ function s {
     fi 
 }
 
-function prompt_char {
-    git branch >/dev/null 2>/dev/null && echo '±' && return
-    if [ $UID -eq 0 ]; then
-        echo '#'
-    else
-        echo '$'
-    fi
+function git_prompt_info {
+      ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+      echo "on ${ref#refs/heads/} $(parse_git_dirty)"
 }
-
-function git_prompt_info() {
-	ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-	echo "${ref#refs/heads/}$(parse_git_dirty)"
-}
-
-
 # Checks if working tree is dirty
-parse_git_dirty() {
+function parse_git_dirty {
 	if [[ -n $(git status -s 2> /dev/null) ]]; then
-		echo "%{$FG[202]%} !"
+		echo '!'
   	else
-		echo "%{$FG[040]%} √"
+		echo '√'
   	fi
 }
 
 # Add git and svn branch names
-export PS1="$PS1\$(git_prompt_info) "
+PS1='\[\033[35m\]\t\[\033[m\] - \[\e[36m\]saipanno\[\e[m\] at \[\033[32m\]\h\[\033[m\] in \[\e[34m\]\w\[\e[m\] $(git_prompt_info)\n\[\e[32m\]\$\[\e[m\] '
 
 # Alias definitions.
-alias psf='ps f'
-alias lsa='ls -lah'
 alias l='ls -la'
 alias ll='ls -l'
+alias psf='ps f'
+alias lsa='ls -lah'
 
 alias p='cd ~/Projects'
 alias d='cd ~/Downloads'
