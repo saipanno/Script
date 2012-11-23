@@ -7,8 +7,7 @@ shopt -s histappend
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-PS1='\[\033[01;31m\]\w\[\033[00m\]\n${debian_chroot:+($debian_chroot)}\[\033[01;34m\]\u\[\033[01;32m\]@\[\033[01;34m\]\h\[\033[00m\]\$ '
+PS1='\[\033[35m\]\t\[\033[m\] - \[\e[36m\]saipanno\[\e[m\]@\[\033[32m\]\h\[\033[m\] \[\e[34m\]\w\[\e[m\] \[\e[32m\]\$ \[\e[m\]'
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -18,58 +17,6 @@ xterm*|rxvt*)
 *)
     ;;
 esac
-
-# dircolors... make sure that we have a color terminal, dircolors exists, and ls supports it.
-if $TERM_IS_COLOR && ( dircolors --help && ls --color ) &> /dev/null; then
-  # For some reason, the unixs machines need me to use $HOME instead of ~
-  # List files from highest priority to lowest. As soon as the loop finds one that works, it will exit.
-  for POSSIBLE_DIR_COLORS in "$HOME/.dir_colors" "/etc/DIR_COLORS"; do
-    [[ -f "$POSSIBLE_DIR_COLORS" ]] && [[ -r "$POSSIBLE_DIR_COLORS" ]] && eval `dircolors -b "$POSSIBLE_DIR_COLORS"` && break
-  done
-
-  alias ls="ls --color=auto"
-  alias ll="ls --color=auto -l"
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
-else
-  # No color, so put a slash at the end of directory names, etc. to differentiate.
-  alias ls="ls -F"
-  alias ll="ls -lF"
-fi
-
-# Alias definitions.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-parse_git_branch ()
-{
-  git branch 2> /dev/null | grep '*' | sed 's#*\ \(.*\)#(git::\1)#'
-}
-
-export EDITOR="$vim"
-export GIT_EDITOR="$vim"
-
-# Add git and svn branch names
-export PS1="$PS1\$(parse_git_branch) "
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#PS1='\[\033[35m\]\t\[\033[m\] - \[\e[36m\]saipanno\[\e[m\]@\[\033[32m\]\h\[\033[m\] \[\e[34m\]\w\[\e[m\] \[\e[32m\]\$ \[\e[m\]'
-
-alias psf='ps f'
 
 function s {
     TMUX=`whereis tmux | awk '{ print $2 }'`
@@ -81,3 +28,38 @@ function s {
     fi 
 }
 
+function prompt_char {
+    git branch >/dev/null 2>/dev/null && echo '±' && return
+    if [ $UID -eq 0 ]; then
+        echo '#'
+    else
+        echo '$'
+    fi
+}
+
+function git_prompt_info() {
+	ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+	echo "${ref#refs/heads/}$(parse_git_dirty)"
+}
+
+
+# Checks if working tree is dirty
+parse_git_dirty() {
+	if [[ -n $(git status -s 2> /dev/null) ]]; then
+		echo "%{$FG[202]%} !"
+  	else
+		echo "%{$FG[040]%} √"
+  	fi
+}
+
+# Add git and svn branch names
+export PS1="$PS1\$(parse_git_branch) "
+
+# Alias definitions.
+alias psf='ps f'
+alias lsa='ls -lah'
+alias l='ls -la'
+alias ll='ls -l'
+
+alias p='cd ~/Projects'
+alias d='cd ~/Downloads'
