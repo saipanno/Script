@@ -15,9 +15,9 @@ import time
 import subprocess
 from multiprocessing import Pool, Manager
 
-def start_expect_script(command):
+def running_command(command):
     try:
-        do = subprocess.call(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        do = subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
     except Exception:
         pass
 
@@ -34,10 +34,10 @@ if __name__ == '__main__':
         sys.exit(1)
 
     bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
-    subprocess.call('mkdir -p %s > /dev/null 2>&1' % bakup_logging_dir, shell=True)
-    subprocess.call('mv -f %s/logging/*.ssh %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    subprocess.call('mv -f %s/logging/*.txt %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    subprocess.call('mv -f %s/logging/*.ping %s > /dev/null 2>&1' % (os.environ['HOME'], bakup_logging_dir), shell=True)
+    running_command('mkdir -p %s' % bakup_logging_dir)
+    running_command('mv -f %s/logging/*.ssh %s' % (os.environ['HOME'], bakup_logging_dir))
+    running_command('mv -f %s/logging/*.txt %s' % (os.environ['HOME'], bakup_logging_dir))
+    running_command('mv -f %s/logging/*.ping %s' % (os.environ['HOME'], bakup_logging_dir))
 
     file = open(target)
     hosts = list()
@@ -55,7 +55,7 @@ if __name__ == '__main__':
             command = 'expect %s %s %s' % (script, host[0], tasks)
         elif len(sys.argv) == 3:
             command = 'expect %s %s' % (script, host[0])
-        pool.apply_async(start_expect_script, (command, ))
+        pool.apply_async(running_command, (command, ))
 
     pool.close()
     pool.join()
