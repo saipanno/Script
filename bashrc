@@ -53,7 +53,7 @@ parse_git_dirty() {
 }
 
 # Add git and svn branch names
-export PS1="$PS1\$(parse_git_branch) "
+export PS1="$PS1\$(git_prompt_info) "
 
 # Alias definitions.
 alias psf='ps f'
