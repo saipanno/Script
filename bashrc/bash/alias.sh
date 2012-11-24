@@ -1,12 +1,11 @@
 
-
 function s {
     TMUX=`whereis tmux | awk '{ print $2 }'`
     $TMUX has-session -t default
     if [ $? = 1 ]; then
         $TMUX new-session -s default
     else
-    $TMUX attach-session -d -t default
+        $TMUX attach-session -d -t default
 fi 
 }
 
