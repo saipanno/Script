@@ -16,37 +16,8 @@ xterm*|rxvt*)
     ;;
 esac
 
-function s {
-    TMUX=`whereis tmux | awk '{ print $2 }'`
-    $TMUX has-session -t default
-    if [ $? = 1 ]; then
-        $TMUX new-session -s default
-    else
-        $TMUX attach-session -d -t default
-    fi 
-}
-
-function git_prompt_info {
-      ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-      echo "on ${ref#refs/heads/} $(parse_git_dirty)"
-}
-# Checks if working tree is dirty
-function parse_git_dirty {
-	if [[ -n $(git status -s 2> /dev/null) ]]; then
-		echo '!'
-  	else
-		echo '√'
-  	fi
-}
-
-# Add git and svn branch names
-PS1='\[\033[35m\]\t\[\033[m\] - \[\e[36m\]saipanno\[\e[m\] at \[\033[32m\]\h\[\033[m\] in \[\e[34m\]\w\[\e[m\] $(git_prompt_info)\n\[\e[32m\]\$\[\e[m\] '
+# Prompt definitions. 
+[ -f ~/.bash/prompt.sh ] && source ~/.bash/prompt.sh
 
 # Alias definitions.
-alias l='ls -la'
-alias ll='ls -l'
-alias psf='ps f'
-alias lsa='ls -lah'
-
-alias p='cd ~/Projects'
-alias d='cd ~/Downloads'
+[ -f ~/.bash/alias.sh ] && source ~/.bash/alias.sh
