@@ -9,6 +9,12 @@
     "font_face": "Monaco",
     "font_size": 9,
 
+    // The number of spaces a tab is considered equal to
+	"tab_size": 4,
+
+	// Set to true to insert spaces when tab is pressed
+	"translate_tabs_to_spaces": true,
+
     // Set to true to turn spell checking on by default
     "spell_check": false,
 
@@ -29,20 +35,20 @@
     "ignored_packages": [],
 
     // Characters that are considered to separate words
-	"word_separators": "./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}`~?",
+    "word_separators": "./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}`~?",
 
-	// Set to false to prevent line numbers being drawn in the gutter
-	"line_numbers": true,
+    // Set to false to prevent line numbers being drawn in the gutter
+    "line_numbers": true,
 
-	// Set to false to hide the gutter altogether
-	"gutter": true,
+    // Set to false to hide the gutter altogether
+    "gutter": true,
 
-	// Spacing between the gutter and the text
-	"margin": 4,
+    // Spacing between the gutter and the text
+    "margin": 4,
 
-	// Fold buttons are the triangles shown in the gutter to fold regions of text
-	"fold_buttons": true,
+    // Fold buttons are the triangles shown in the gutter to fold regions of text
+    "fold_buttons": true,
 
-	// Hides the fold buttons unless the mouse is over the gutter
-	"fade_fold_buttons": true
+    // Hides the fold buttons unless the mouse is over the gutter
+    "fade_fold_buttons": true
 }
