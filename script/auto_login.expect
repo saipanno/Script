@@ -18,7 +18,7 @@ switch -regexp $argv0 {
         set info(user)    "sndawangruoyan"
         set info(shadow)  "$env(HOME)/.shadow/password.kr"
     }
-    ssh.li {
+    ssh.hc {
         set info(user)    "root"
         set info(port)    "7035" 
         set info(address) "106.187.89.40"
