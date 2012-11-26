@@ -1,7 +1,3 @@
-# Push and pop directories on directory stack
-alias pu='pushd'
-alias po='popd'
-
 # Basic directory operations
 alias ...='cd ../..'
 
@@ -19,6 +15,8 @@ alias p='cd ~/Project'
 alias d='cd ~/Downloads'
 
 alias psf='ps f'
+
+alias gp='git pull'
 
 function s {
     TMUX=`whereis tmux | awk '{ print $2 }'`
