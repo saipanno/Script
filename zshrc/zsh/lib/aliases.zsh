@@ -11,7 +11,7 @@ alias lsa='ls -lah'
 alias l='ls -la'
 alias ll='ls -l'
 
-alias p='cd ~/Project'
+alias p='cd ~/Projects'
 alias d='cd ~/Downloads'
 
 alias psf='ps f'
