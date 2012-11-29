@@ -4,7 +4,7 @@
 #
 #    multichecking,
 #
-#          Support ping and socket check.
+#         socket或ping并发测试脚本 
 #
 #
 #    Created by Ruoyan Wong on 2012/11/04.
@@ -53,6 +53,7 @@ if __name__ == '__main__':
     COUNT = 5
     TIMEOUT = 2
     MAX_PROCESSES = 250
+    LOG_DIRECTORY = '%s/logging' % os.environ['HOME']
 
     try:
         item   = sys.argv[1]
@@ -61,11 +62,11 @@ if __name__ == '__main__':
         print "Usage:\n    python multichecking.py socket|ping host-address.txt"
         sys.exit(1)
 
-    bakup_logging_dir = '%s/logging/%s' % (os.environ['HOME'], time.strftime("%Y%m%d%H%M"))
-    running_command('mkdir -p %s' % bakup_logging_dir, shell=True)
-    running_command('mv -f %s/logging/*.ssh %s' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    running_command('mv -f %s/logging/*.txt %s' % (os.environ['HOME'], bakup_logging_dir), shell=True)
-    running_command('mv -f %s/logging/*.ping %s' % (os.environ['HOME'], bakup_logging_dir), shell=True)
+    sub_log_directory = '%s/%s' % (LOG_DIRECTORY, time.strftime("%Y%m%d%H%M"))
+    running_command('mkdir -p %s' % sub_log_directory)
+    running_command('mv -f %s/*.ssh %s' % (LOG_DIRECTORY, sub_log_directory))
+    running_command('mv -f %s/*.txt %s' % (LOG_DIRECTORY, sub_log_directory))
+    running_command('mv -f %s/*.ping %s' % (LOG_DIRECTORY, sub_log_directory))
 
     manager = Manager()
     kitten = manager.dict()
@@ -92,7 +93,7 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    result_log_file = '%s/logging/checking.txt' % os.environ['HOME']
+    result_log_file = '%s/checking.txt' % LOG_DIRECTORY 
     file = open(result_log_file, 'w')
     for address in kitten.keys():
         file.write('%s : %s\n' % (address, kitten[address]))
