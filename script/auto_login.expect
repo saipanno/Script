@@ -12,19 +12,6 @@ switch -regexp $argv0 {
         set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
         set info(shadow) "$env(HOME)/.shadow/password.ku"
     }
-    ssh.kr {
-        set info(port)    "22" 
-        set info(address) "122.11.32.36"
-        set info(user)    "sndawangruoyan"
-        set info(shadow)  "$env(HOME)/.shadow/password.kr"
-    }
-    ssh.hc {
-        set info(user)    "root"
-        set info(port)    "7035" 
-        set info(address) "106.187.89.40"
-        set info(secret)  "$env(HOME)/.ssh/id_rsa"
-        set info(shadow)  "$env(HOME)/.shadow/password"
-    }
 }
 
 # 解析参数，存入info数组中
