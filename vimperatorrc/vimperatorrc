@@ -3,17 +3,29 @@
 
 " vim: set ft=vimperator:
 
+echo 'Loading .vimperatorrc ...'
+
 set defsearch=google
 set titlestring=Mozilla\ Firefox
+set newtab=all
+set visualbell
+
+" Scroll settings
+noremap j 5j
+noremap k 5k
+noremap h <C-p>
+noremap l <C-n>
+
 
 let mapleader = ","
-noremap <leader>b :tabopen www.baidu.com<cr>
-noremap <leader>g :tabopen www.google.com/ncr<cr>
-noremap <leader>i :tabopen saipanno.com<cr>
-noremap <leader>m :tabopen www.gmail.com<cr>
-noremap <leader>v :tabopen www.v2ex.com<cr>
-noremap <leader>w :tabopen weibo.com<cr>
-noremap <leader>z :tabopen www.zhihu.com<cr>
+noremap <leader>bd :tabopen www.baidu.com<cr>
+noremap <leader>gg :tabopen www.google.com/ncr<cr>
+noremap <leader>gh :tabopen github.com/saipanno<cr>
+noremap <leader>sp :tabopen saipanno.com<cr>
+noremap <leader>gm :tabopen www.gmail.com<cr>
+noremap <leader>vx :tabopen www.v2ex.com<cr>
+noremap <leader>wb :tabopen weibo.com<cr>
+noremap <leader>zh :tabopen www.zhihu.com<cr>
 
 noremap y Y
 noremap Y y
