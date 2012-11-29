@@ -1,32 +1,79 @@
 #!/usr/bin/expect -f
 
-set timeout 60
-
-set USER "root"
-set KEYGEN "$env(HOME)/.ssh/id_rsa"
-array set PASSWORD [list 0 XXXXXX 1 YYYYYY 2 ZZZZZZ]
-
-set count 0
-set PROMPT "#"
+# 常量设定
+set timeout 45
+set PROMPT "(%|>|#|\\\$) $"
 set LOGDIR "$env(HOME)/logging"
 
-set ADDRESS [lindex $argv 0]
+# 设定部分参数的默认值。
+set info(port)   "22" 
+set info(user)   "root"
+set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
+set info(shadow) "$env(HOME)/.shadow/password.ku"
 
+puts $info(shadow)
+# 解析参数，存入info数组中
 if { $argc!=1 } {
-        puts stderr "Usage: $argv0 address"
-        exit
+    for {set x 0} {$x<$argc} {incr x 2} {
+        set opt [lindex $argv $x]
+        set nexts [expr {$x + 1}]
+        switch -glob $opt {
+            u { set info(user)    [lindex $argv $nexts] }
+            p { set info(port)    [lindex $argv $nexts] }
+            i { set info(secret)  [lindex $argv $nexts] }
+            s { set info(shadow)  [lindex $argv $nexts] }
+            h { set info(address) [lindex $argv $nexts] }
+        }
+        if { [expr {$nexts + 1}] > $argc } break 
+    }
+} else {
+    set info(address) [lindex $argv 0]
 }
 
-spawn ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -i $KEYGEN $USER@$ADDRESS
+# 判断参数传入是否符合要求，如无address参数传入则打印usage帮助并退出
+if { ![info exists info(address)] } {
+    puts "usage: "
+    puts "  $argv0 address"
+    puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[h address\] \[s shadow\]"
+    exit
+}
 
+# 根据用户传递参数设定ssh命令
+set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no"
+foreach {key value} [array get info] {
+    if {$key == "user"} { 
+        append parameters " " "-l $value" 
+    } elseif {$key == "port"} { 
+        append parameters " " "-p $value"
+    } elseif {$key == "secret"} {
+        append parameters " " "-i $value"
+    }   
+}
+
+# 从shadow文件中读取用户密码
+set count 0
+set file [open $info(shadow) r]
+while { [ gets $file oneline ]>=0 } {
+    set password($count) $oneline
+    incr count
+}
+close $file
+
+# 使用{*}关闭spawn的参数异常情况
+spawn {*}$parameters $info(address)
+
+set count 0
 expect {
+    # 匹配到"Permission denied"关键字自动将密码跳转到下一条记录，主要目的为可自动尝试多个密码。
 	"Permission denied" {
         incr count
         exp_continue
     }
     "*?assword:*" {
-        if [info exists PASSWORD($count)] {
-            send "$PASSWORD($count)\r"
+    # 从密码数组中获取当前密码，当密码不存在时表示密码尝试失败，退出。
+        if [info exists password($count)] {
+            puts "\n -> Use $password($count) try."
+            send "$password($count)\r"
             exp_continue
         } else {
             log_file $LOGDIR/nopasswd.txt
@@ -36,36 +83,37 @@ expect {
     }
     "No route to host" {
         log_file $LOGDIR/noroute.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
         exit
     }
     "Connection refused" {
         log_file $LOGDIR/refused.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
         exit
     }
     "Connection closed" {
         log_file $LOGDIR/closed.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
 		exit
     }
     "Connection reset" {
         log_file $LOGDIR/reset.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
 		exit
     }
 	"Connection timed out" {
         log_file $LOGDIR/timeout.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
 		exit
 	}
-    "$PROMPT" {
+    -re "$PROMPT" {
         log_file $LOGDIR/success.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
+        exit
     }
 	timeout {
         log_file $LOGDIR/timeout.txt
-        send_user "$ADDRESS\n"
+        send_user "$info(address)\n"
 		exit
 	}
 }
