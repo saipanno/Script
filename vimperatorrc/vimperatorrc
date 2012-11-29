@@ -6,7 +6,7 @@
 echo 'Loading .vimperatorrc ...'
 
 set defsearch=google
-set titlestring="Mozilla Firefox"
+set titlestring="Ruoyan Wong's Internet"
 set newtab=all
 set visualbell
 
