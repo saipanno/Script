@@ -13,19 +13,9 @@ WORDCHARS=''
 zmodload -i zsh/complist
 
 # Use ~/.ssh/config hostname completion
-[ -r ~/.ssh/config ] && _ssh_hosts=(`awk 'BEGIN {ORS=" "} /^Host/ { print $2 }' $HOME/.ssh/config`) || _ssh_hosts=()
-hosts=(
-  "$_ssh_hosts[@]"
-  localhost
-)
-zstyle ':completion:*:hosts' hosts $hosts
+[ -r ~/.ssh/config ] && _ssh_hosts=(`awk '/^Host/ { print $2 }' $HOME/.ssh/config`) || _ssh_hosts=()
+zstyle ':completion:*:hosts' hosts $_ssh_hosts[@]
 
 # Don't complete uninteresting users
-zstyle ':completion:*:*:*:users' ignored-patterns \
-        abrt adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
-        dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
-        hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
-        mailman mailnull mldonkey mysql nagios \
-        named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
-        operator pcap postfix postgres privoxy pulse pvm quagga radvd root\
-        rpc rpcuser rpm saslauth shutdown squid sshd sync tcpdump uucp vcsa xfs
+_hide_users=(`awk 'BEGIN {FS=":"} /nologin|halt|shutdown|sync/ { print $1 }' /etc/passwd`) || _hide_users=()
+zstyle ':completion:*:*:*:users' ignored-patterns $_hide_users[@]
