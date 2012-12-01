@@ -1,2 +1,5 @@
 ssh.*
+id_rsa.*
+known_hosts
+
 .netrwhist
