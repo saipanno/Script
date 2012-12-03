@@ -26,6 +26,10 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-
 zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 cdpath=(.)
 
+# Use caching so that commands like apt and dpkg complete are useable
+zstyle ':completion::complete:*' use-cache 1
+zstyle ':completion::complete:*' cache-path ~/.oh-my-zsh/cache/
+
 # Use ~/.ssh/config hostname completion
 [ -r ~/.ssh/config ] && _ssh_hosts=(`awk '/^Host/ { print $2 }' $HOME/.ssh/config`) || _ssh_hosts=()
 zstyle ':completion:*:hosts' hosts $_ssh_hosts[@]
