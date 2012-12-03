@@ -1,12 +1,3 @@
-#setopt auto_menu         # show completion menu on succesive tab press
-#setopt complete_in_word
-#setopt always_to_end
-#setopt glob bareglobqual nullglob rcexpandparam extendedglob
-
-#unsetopt flowcontrol
-#unsetopt menu_complete   # do not autoselect the first completion entry
-#unsetopt markdirs globsubst shwordsplit shglob ksharrays cshnullglob
-#unsetopt allexport aliases errexit octalzeroes
 unsetopt menu_complete # do not autoselect the first completion entry
 unsetopt flowcontrol
 setopt auto_menu # show completion menu on succesive tab press
