@@ -6,7 +6,7 @@
 echo 'Loading .vimperatorrc ...'
 
 set defsearch=google
-set titlestring="Ruoyan Wong's Internet"
+set titlestring="有生之年,山长水远."
 set newtab=all
 set visualbell
 
