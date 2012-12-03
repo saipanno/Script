@@ -1,3 +1,8 @@
 Host db
-
-Host mm
+    User root
+    HostName 122.11.45.8
+    IdentityFile ~/.ssh/id_rsa.ku
+Host ts
+    User root
+    HostName 122.11.45.123
+    IdentityFile ~/.ssh/id_rsa.ku
