@@ -11,7 +11,6 @@ set info(user)   "root"
 set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
 set info(shadow) "$env(HOME)/.shadow/password.ku"
 
-puts $info(shadow)
 # 解析参数，存入info数组中
 if { $argc!=1 } {
     for {set x 0} {$x<$argc} {incr x 2} {
@@ -72,7 +71,6 @@ expect {
     "*?assword:*" {
     # 从密码数组中获取当前密码，当密码不存在时表示密码尝试失败，退出。
         if [info exists password($count)] {
-            puts "\n -> Use $password($count) try."
             send "$password($count)\r"
             exp_continue
         } else {

@@ -73,7 +73,6 @@ expect {
     "*?assword:*" {
     # 从密码数组中获取当前密码，当密码不存在时表示密码尝试失败，退出。
         if [info exists password($count)] {
-            puts "\n -> Use $password($count) try."
             send "$password($count)\r"
             exp_continue
         } else {
