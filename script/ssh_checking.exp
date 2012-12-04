@@ -38,7 +38,7 @@ if { ![info exists info(address)] } {
 }
 
 # 根据用户传递参数设定ssh命令
-set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no"
+set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
 foreach {key value} [array get info] {
     if {$key == "user"} { 
         append parameters " " "-l $value" 
