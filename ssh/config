@@ -6,3 +6,12 @@ Host ts
     User root
     HostName 122.11.45.123
     IdentityFile ~/.ssh/id_rsa.ku
+Host hc
+    User root
+    Port 7035
+    HostName 106.187.89.40
+    IdentityFile ~/.ssh/id_rsa
+Host kr
+    User sndawangruoyan
+    HostName 122.11.32.36 
+    IdentityFile ~/.ssh/id_rsa
