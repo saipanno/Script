@@ -58,14 +58,15 @@ set whichwrap+=<,>,[,]
 
 " Map auto complete of (, ", ', [
 
-"""""""""""""""""""""""""""""""""""""""
-"       Alias and hotkey
-"                 
-"""""""""""""""""""""""""""""""""""""""
+" Alias config 
 
 iab ryw Ruoyan Wong
 iab wry wangruoyan@snda.com
 iab ggg kid.xiyang@gmail.com
+
+" 通过模板创建文件
+autocmd BufNewFile *.py 0r ~/.vim/template/py_template.py
+autocmd BufNewFile *.sh 0r ~/.vim/template/bash_template.py
 
 """""""""""""""""""""""""""""""""""""""
 "       Addons Configuration
