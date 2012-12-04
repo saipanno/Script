@@ -15,10 +15,6 @@ This is my profile repository, contains the following script and configuration:
 
 ##### You can use the following methods initialization:
 
-Change personal home directory.
-
-	cd ~
-
 Initialize **bin**:
 
 	ln -s ~/Projects/Profile.d/script bin
@@ -48,4 +44,4 @@ Initialize  **firefox**:
 	
 Initialize  **ssh**:
 
-	ln -s ~/Projects/Profile.d/ssh/* .ssh/*
+	ln ~/Projects/Profile.d/ssh/* .ssh/*
