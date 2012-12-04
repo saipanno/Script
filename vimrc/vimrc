@@ -67,10 +67,6 @@ iab ryw Ruoyan Wong
 iab wry wangruoyan@snda.com
 iab ggg kid.xiyang@gmail.com
 
-map  <silent><F12> <ESC>:tabnew<CR>
-map  <silent><F5>  <ESC>:NEXTCOLOR<CR>
-map  <silent><F6>  <ESC>:PREVCOLOR<CR>
-
 """""""""""""""""""""""""""""""""""""""
 "       Addons Configuration
 "                 
