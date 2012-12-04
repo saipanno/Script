@@ -65,8 +65,8 @@ iab wry wangruoyan@snda.com
 iab ggg kid.xiyang@gmail.com
 
 " 通过模板创建文件
-autocmd BufNewFile *.py 0r ~/.vim/template/py_template.py
-autocmd BufNewFile *.sh 0r ~/.vim/template/bash_template.py
+" autocmd BufNewFile *.py 0r ~/.vim/template/py_template.py
+" autocmd BufNewFile *.sh 0r ~/.vim/template/bash_template.py
 
 """""""""""""""""""""""""""""""""""""""
 "       Addons Configuration
@@ -86,3 +86,11 @@ filetype indent on
 " http://www.vim.org/scripts/script.php?script_id=850
 "
 let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
+
+" template_loader.vim
+let g:template_load = 1
+let g:template_tags_replacing = 1
+let g:T_AUTHOR = "Ruoyan Wong"
+let g:T_AUTHOR_EMAIL = "kid.xiyang@gmail.com"
+let g:T_AUTHOR_WEBSITE = "http://saipanno.com"
+let g:T_DATE_FORMAT = "%c"
