@@ -4,4 +4,4 @@
 #
 #         some script.
 #
-#    Created by <T_AUTHOR>, <T_CREATE_DATE>
+#    Created by <T_AUTHOR>, at <T_CREATE_DATE>.

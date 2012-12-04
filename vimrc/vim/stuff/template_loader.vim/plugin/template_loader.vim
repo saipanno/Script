@@ -52,7 +52,6 @@
 "	(int) g:template_replace_end_line
 "		End tag replacing to here. Default is the last line ("$")
 
-echo "load template_loader"
 if exists("g:template_load") && g:template_load==1
 	augroup Template_Loader
 		autocmd!
