@@ -85,9 +85,10 @@ filetype indent on
 " pydiction.vim
 " http://www.vim.org/scripts/script.php?script_id=850
 "
-" let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
+let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
 
 " template_loader.vim
+"
 let g:template_load = 1
 let g:template_tags_replacing = 1
 let g:T_AUTHOR = "Ruoyan Wong"
