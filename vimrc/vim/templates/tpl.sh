@@ -1,7 +1,7 @@
 #!/bin/bash 
 #
-#    main.sh,
+#    <T_FILENAME>,
 #
 #         some script.
 #
-#    Created by Ruoyan Wong
+#    Created by <T_AUTHOR>, <T_CREATE_DATE>

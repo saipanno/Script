@@ -91,6 +91,4 @@ let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
 let g:template_load = 1
 let g:template_tags_replacing = 1
 let g:T_AUTHOR = "Ruoyan Wong"
-let g:T_AUTHOR_EMAIL = "kid.xiyang@gmail.com"
-let g:T_AUTHOR_WEBSITE = "http://saipanno.com"
 let g:T_DATE_FORMAT = "%c"

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#    main.py,
+#    <T_FILENAME>,
 #
 #         some script.
 #
-#    Created by Ruoyan Wong
+#    Created by <T_AUTHOR>, <T_CREATE_DATE>
