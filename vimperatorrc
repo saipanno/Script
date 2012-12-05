@@ -3,8 +3,6 @@
 
 " vim: set ft=vimperator:
 
-echo 'Loading .vimperatorrc ...'
-
 set defsearch=google
 set titlestring="有生之年,山长水远."
 set newtab=all
@@ -15,7 +13,6 @@ noremap j 5j
 noremap k 5k
 noremap h <C-p>
 noremap l <C-n>
-
 
 let mapleader = ","
 noremap <leader>bd :tabopen www.baidu.com<cr>
