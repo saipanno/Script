@@ -16,8 +16,12 @@ xterm*|rxvt*)
     ;;
 esac
 
+
 # Prompt definitions. 
 [ -f ~/.bash/prompt.sh ] && source ~/.bash/prompt.sh
 
 # Alias definitions.
 [ -f ~/.bash/alias.sh ] && source ~/.bash/alias.sh
+
+# Completion definitions.
+[ -f ~/.bash/completion.sh ] && source ~/.bash/completion.sh
