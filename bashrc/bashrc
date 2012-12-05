@@ -25,3 +25,6 @@ esac
 
 # Completion definitions.
 [ -f ~/.bash/completion.sh ] && source ~/.bash/completion.sh
+
+# Keymap definitions.
+[ -f ~/.bash/keymap.sh ] && source ~/.bash/keymap.sh
