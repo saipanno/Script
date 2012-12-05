@@ -1,2 +1,2 @@
 # 自动补全忽略大小写
-set completion-ignore-case on
+bind 'set completion-ignore-case on'
