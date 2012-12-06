@@ -9,13 +9,12 @@ set nocompatible
 """""""""""""""""""""""""""""""""""""""
 
 if has("gui_running")
-    colorscheme molokai
-    let g:molokai_original = 0
-
-else
-    " colorscheme vibrantink
     set background=dark
     colorscheme solarized
+else
+    " colorscheme vibrantink
+    colorscheme molokai
+    let g:molokai_original = 0
 endif
 
 set number          " Display line number
