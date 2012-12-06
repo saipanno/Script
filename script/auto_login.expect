@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 
 # 常量设定
-set timeout 10
+set timeout 30
 set PROMPT "(%|>|#|\\\$) $"
 
 # 根据用于调用auto_login.expect命令的别名设定部分参数的默认值。

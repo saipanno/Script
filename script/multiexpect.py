@@ -24,7 +24,7 @@ def running_command(command):
 if __name__ == '__main__':
 
     # Globals Variable.
-    MAX_PROCESSES = 250
+    MAX_PROCESSES = 200
     LOG_DIRECTORY = '%s/logging' % os.environ['HOME']
 
     try:
