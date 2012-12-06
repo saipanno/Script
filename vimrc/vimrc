@@ -9,8 +9,11 @@
 if has("gui_running")
     colorscheme molokai
     let g:molokai_original = 0
+
 else
-    colorscheme vibrantink
+    " colorscheme vibrantink
+    set background=dark
+    colorscheme solarized
 endif
 
 set nocompatible    " Use Vim defaults instead of 100% vi compatibility
@@ -23,7 +26,7 @@ set showcmd         " Display incomplete commands
 set autoread        " Auto read when file is changed from outside
 set showmatch       " Show matching bracets when text indicator is over them
 set novisualbell    " No sound on errors
-syntax on           " Syntax highlight
+syntax enable       " Syntax highlight
 set cursorline      " Cursor current line
 set encoding=utf-8  " Set default-encoding to utf-8
 
