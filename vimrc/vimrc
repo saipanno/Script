@@ -29,6 +29,7 @@ set novisualbell    " No sound on errors
 syntax enable       " Syntax highlight
 set cursorline      " Cursor current line
 set encoding=utf-8  " Set default-encoding to utf-8
+let mapleader=","
 
 " Set tab setting
 set smarttab
@@ -96,3 +97,10 @@ let g:T_DATE_FORMAT = "%Y年%m月%d日"
 
 " cs-explorer.vim
 " http://www.vim.org/scripts/script.php?script_id=1298
+nmap <leader>cs :ColorSchemeExplorer<CR>
+
+" indent-guides
+" http://www.vim.org/scripts/script.php?script_id=3361
+let g:indent_guides_auto_colors = 1
+let g:indent_guides_enable_on_vim_startup = 0
+nmap <leader>ig :IndentGuidesToggle<CR>
