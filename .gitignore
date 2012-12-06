@@ -3,4 +3,5 @@ id_rsa.*
 password*
 known_hosts
 
+.DS_Store
 .netrwhist
