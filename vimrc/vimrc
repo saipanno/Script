@@ -19,48 +19,48 @@ else
     colorscheme solarized
 endif
 
-set number          " Display line number
-set incsearch       " Incremental search 
-set ignorecase      " Ignore case
-set confirm         " 
-set history=50      " Keep 50 lines of command line history
-set showcmd         " Display incomplete commands
-set autoread        " Auto read when file is changed from outside
-set showmatch       " Show matching bracets when text indicator is over them
-set novisualbell    " No sound on errors
-syntax enable       " Syntax highlight
-set cursorline      " Cursor current line
-set encoding=utf-8  " Set default-encoding to utf-8
-let mapleader=","
+    set number          " Display line number
+    set incsearch       " Incremental search 
+    set ignorecase      " Ignore case
+    set confirm         " 
+    set history=50      " Keep 50 lines of command line history
+    set showcmd         " Display incomplete commands
+    set autoread        " Auto read when file is changed from outside
+    set showmatch       " Show matching bracets when text indicator is over them
+    set novisualbell    " No sound on errors
+    syntax enable       " Syntax highlight
+    set cursorline      " Cursor current line
+    set encoding=utf-8  " Set default-encoding to utf-8
+    let mapleader=","
 
 " <tab>设置
-set smarttab
-set expandtab
-set shiftwidth=4
-set tabstop=4
+    set smarttab
+    set expandtab
+    set shiftwidth=4
+    set tabstop=4
 
 " 缩进设置 
-set autoindent                     " Auto indent
-set smartindent                    " Smart indent 
-set cindent                        " C/C++ indent style
+    set autoindent                     " Auto indent
+    set smartindent                    " Smart indent 
+    set cindent                        " C/C++ indent style
 
 " 禁用bakup以及swap文件 
-set nobackup
-set noswapfile
-set nowritebackup
+    set nobackup
+    set noswapfile
+    set nowritebackup
 
 " 启用折叠功能  
-set foldenable
-set foldmethod=manual
-nnoremap @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')
+    set foldenable
+    set foldmethod=manual
+    nnoremap @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')
 
 " 设置状态栏格式
-set laststatus=2
-set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
+    set laststatus=2
+    set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
 
 " Backspace and cursor keys wrap to previous/next line
-set backspace=indent,eol,start 
-set whichwrap+=<,>,[,]
+    set backspace=indent,eol,start 
+    set whichwrap+=<,>,[,]
 
 " Map auto complete of (, ", ', [
 
