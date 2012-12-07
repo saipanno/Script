@@ -13,7 +13,7 @@ import os
 import sys
 import time
 import subprocess
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool
 
 def running_command(command):
     try:
