@@ -51,9 +51,9 @@ if __name__ == '__main__':
     for host in hosts:
         if len(sys.argv) == 4:
             tasks  = sys.argv[3]
-            command = 'expect %s -h %s -e %s' % (script, host[0], tasks)
+            command = 'expect %s h %s e %s' % (script, host[0], tasks)
         elif len(sys.argv) == 3:
-            command = 'expect %s -h %s' % (script, host[0])
+            command = 'expect %s h %s' % (script, host[0])
         pool.apply_async(running_command, (command, ))
 
     pool.close()
