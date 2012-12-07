@@ -17,11 +17,11 @@ if { $argc>=2 } {
         set opt [lindex $argv $x]
         set nexts [expr {$x + 1}]
         switch -glob $opt {
-            "-u" { set info(user)    [lindex $argv $nexts] }
-            "-p" { set info(port)    [lindex $argv $nexts] }
-            "-i" { set info(secret)  [lindex $argv $nexts] }
-            "-s" { set info(shadow)  [lindex $argv $nexts] }
-            "-h" { set info(address) [lindex $argv $nexts] }
+            "u" { set info(user)    [lindex $argv $nexts] }
+            "p" { set info(port)    [lindex $argv $nexts] }
+            "i" { set info(secret)  [lindex $argv $nexts] }
+            "s" { set info(shadow)  [lindex $argv $nexts] }
+            "h" { set info(address) [lindex $argv $nexts] }
         }
         if { [expr {$nexts + 1}] > $argc } break 
     }
