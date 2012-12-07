@@ -15,8 +15,9 @@ alias p='cd ~/Projects'
 alias d='cd ~/Downloads'
 
 alias psf='ps f'
-
 alias gp='git pull'
+
+[ -f /usr/local/bin/mvim ] && alias vim='mvim -v'
 
 function s {
     TMUX=`whereis tmux | awk '{ print $2 }'`
