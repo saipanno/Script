@@ -17,3 +17,5 @@ alias lsa='ls -lah'
 
 alias p='cd ~/Projects'
 alias d='cd ~/Downloads'
+
+[ -f /usr/local/bin/mvim ] && alias vim='mvim -v'
