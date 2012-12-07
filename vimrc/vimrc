@@ -69,7 +69,7 @@ set whichwrap+=<,>,[,]
     iab wry wangruoyan@snda.com
     iab ggg kid.xiyang@gmail.com
 
-" 重新加载配置.
+" Use ,+s to reload vim configuration.
     nmap <leader>s :so $MYVIMRC<CR>
 
 " pathogen.vim
@@ -100,3 +100,10 @@ set whichwrap+=<,>,[,]
 " nerd-tree.vim
 " http://www.vim.org/scripts/script.php?script_id=1658
     nmap <leader>nt :NERDTreeToggle<CR>
+
+" pyflakes.vim
+" http://www.vim.org/scripts/script.php?script_id=2441
+    let g:pyflakes_use_quickfix = 0
+" pydiction.vim
+" http://www.vim.org/scripts/script.php?script_id=850
+    let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
