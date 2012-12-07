@@ -49,7 +49,6 @@ def socket_checking(address, port, result, TIMEOUT):
 
 if __name__ == '__main__':
 
-    # Globals Variable.
     COUNT = 5
     TIMEOUT = 2
     MAX_PROCESSES = 250
