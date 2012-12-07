@@ -6,7 +6,7 @@ set PROMPT "(%|>|#|\\\$) $"
 
 # 根据用于调用auto_login.expect命令的别名设定部分参数的默认值。
 switch -regexp $argv0 {
-    ssh.ku { 
+    "ssh.ku" { 
         set info(port)   "22" 
         set info(user)   "root"
         set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
