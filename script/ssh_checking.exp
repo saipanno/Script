@@ -11,7 +11,7 @@ set info(user)   "root"
 set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
 set info(shadow) "$env(HOME)/.ssh/password.ku"
 
-# 解析参数，存入info数组中
+# 解析参数,存入数组中.
 if { $argc>=2 } {
     for {set x 0} {$x<$argc} {incr x 2} {
         set opt [lindex $argv $x]
@@ -19,6 +19,7 @@ if { $argc>=2 } {
         switch -glob $opt {
             "u" { set info(user)    [lindex $argv $nexts] }
             "p" { set info(port)    [lindex $argv $nexts] }
+            "e" { set info(script)  [lindex $argv $nexts] }
             "i" { set info(secret)  [lindex $argv $nexts] }
             "s" { set info(shadow)  [lindex $argv $nexts] }
             "h" { set info(address) [lindex $argv $nexts] }
@@ -29,14 +30,16 @@ if { $argc>=2 } {
     set info(address) [lindex $argv 0]
 }
 
-# 判断参数传入是否符合要求，如无address参数传入则打印usage帮助并退出
+# 判断传参是否符合要求:
+#    变量info(address)必须存在. 
+#
 if { ![info exists info(address)] } {
     puts "usage: "
-    puts "  $argv0 \[-u name\] \[-p port\] \[-i identity\] \[-h address\] \[-s shadow\]"
+    puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[d address\] \[s shadow\]"
     exit
 }
 
-# 从shadow文件中读取用户密码
+# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组
 if { [info exists info(shadow)] && [file exists info(shadow)] } { 
     set count 0
     set file [open $info(shadow) r]
@@ -65,6 +68,7 @@ foreach {key value} [array get info] {
 spawn {*}$parameters $info(address)
 
 set count 0
+
 expect {
     # 匹配到"Permission denied"关键字自动将密码跳转到下一条记录，主要目的为可自动尝试多个密码。
 	"Permission denied" {
