@@ -70,7 +70,7 @@ endif
     iab ggg kid.xiyang@gmail.com
 
 " Use ,+s to reload vim configuration.
-    nmap <leader>s :so $MYVIMRC<CR>
+    nmap <leader>s :so $MYVIMRC<cr>
 
 " pathogen.vim
 " https://github.com/tpope/vim-pathogen
@@ -89,17 +89,17 @@ endif
 
 " cs-explorer.vim
 " http://www.vim.org/scripts/script.php?script_id=1298
-    nmap <leader>cs :ColorSchemeExplorer<CR>
+    nmap <leader>cs :ColorSchemeExplorer<cr>
 
 " indent-guides.vim
 " http://www.vim.org/scripts/script.php?script_id=3361
     let g:indent_guides_auto_colors = 1
     let g:indent_guides_enable_on_vim_startup = 0
-    nmap <leader>ig :IndentGuidesToggle<CR>
+    nmap <leader>ig :IndentGuidesToggle<cr>
 
 " nerd-tree.vim
 " http://www.vim.org/scripts/script.php?script_id=1658
-    nmap <leader>nt :NERDTreeToggle<CR>
+    nmap <leader>nt :NERDTreeToggle<cr>
 
 " pyflakes.vim
 " http://www.vim.org/scripts/script.php?script_id=2441
