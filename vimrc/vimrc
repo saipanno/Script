@@ -33,28 +33,28 @@ set cursorline      " Cursor current line
 set encoding=utf-8  " Set default-encoding to utf-8
 let mapleader=","
 
-" Set tab setting
+" <tab>设置
 set smarttab
 set expandtab
 set shiftwidth=4
 set tabstop=4
 
-" Indent setting
+" 缩进设置 
 set autoindent                     " Auto indent
 set smartindent                    " Smart indent 
 set cindent                        " C/C++ indent style
 
-" Disable bakup and swap file
+" 禁用bakup以及swap文件 
 set nobackup
 set noswapfile
 set nowritebackup
 
-" Enable fold and space key to switch fold
+" 启用折叠功能  
 set foldenable
 set foldmethod=manual
 nnoremap @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')
 
-" Set ststusline
+" 设置状态栏格式
 set laststatus=2
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
 
@@ -64,49 +64,39 @@ set whichwrap+=<,>,[,]
 
 " Map auto complete of (, ", ', [
 
-" Alias config 
+" 缩写设置, <tab>自动替换 
+    iab ryw Ruoyan Wong
+    iab wry wangruoyan@snda.com
+    iab ggg kid.xiyang@gmail.com
 
-iab ryw Ruoyan Wong
-iab wry wangruoyan@snda.com
-iab ggg kid.xiyang@gmail.com
-
-" 通过模板创建文件
-" autocmd BufNewFile *.py 0r ~/.vim/template/py_template.py
-" autocmd BufNewFile *.sh 0r ~/.vim/template/bash_template.py
-
-"""""""""""""""""""""""""""""""""""""""
-"       Addons Configuration
-"                 
-"""""""""""""""""""""""""""""""""""""""
+" 重新加载配置.
+    nmap <leader>s :so $MYVIMRC<CR>
 
 " pathogen.vim
 " https://github.com/tpope/vim-pathogen
-"
-call pathogen#infect('stuff')
-filetype plugin on
-filetype indent on
+    call pathogen#infect('stuff')
+    filetype plugin on
+    filetype indent on
 
 " template_loader.vim
-"
-let g:template_load = 1
-let g:template_tags_replacing = 1
-let g:T_AUTHOR = "Ruoyan Wong"
-let g:T_DATE_FORMAT = "%Y年%m月%d日"
+    let g:template_load = 1
+    let g:template_tags_replacing = 1
+    let g:T_AUTHOR = "Ruoyan Wong"
+    let g:T_DATE_FORMAT = "%Y年%m月%d日"
 
 " vim-colors-solarized.vim
 " https://github.com/altercation/solarized/tree/master/vim-colors-solarized
-"
 
 " cs-explorer.vim
 " http://www.vim.org/scripts/script.php?script_id=1298
-nmap <leader>cs :ColorSchemeExplorer<CR>
+    nmap <leader>cs :ColorSchemeExplorer<CR>
 
 " indent-guides.vim
 " http://www.vim.org/scripts/script.php?script_id=3361
-let g:indent_guides_auto_colors = 1
-let g:indent_guides_enable_on_vim_startup = 0
-nmap <leader>ig :IndentGuidesToggle<CR>
+    let g:indent_guides_auto_colors = 1
+    let g:indent_guides_enable_on_vim_startup = 0
+    nmap <leader>ig :IndentGuidesToggle<CR>
 
 " nerd-tree.vim
 " http://www.vim.org/scripts/script.php?script_id=1658
-nmap <leader>nt :NERDTreeToggle<CR>
+    nmap <leader>nt :NERDTreeToggle<CR>
