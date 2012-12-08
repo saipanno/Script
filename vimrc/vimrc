@@ -54,15 +54,14 @@ endif
     set foldmethod=manual
     nnoremap @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')
 
-" 设置状态栏格式
-    set laststatus=2
-    set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}
-
 " Backspace and cursor keys wrap to previous/next line
     set backspace=indent,eol,start 
     set whichwrap+=<,>,[,]
 
-" Map auto complete of (, ", ', [
+" 在命令模式中，输入法自动会被禁用，而进入插入模式后，可以正常使用输入法。ESC退出到命令模式时，会自动禁用输入法。
+    set noimd
+    set imi=2
+    set ims=2
 
 " 缩写设置, <tab>自动替换 
     iab ryw Ruoyan Wong
@@ -104,6 +103,15 @@ endif
 " pyflakes.vim
 " http://www.vim.org/scripts/script.php?script_id=2441
     let g:pyflakes_use_quickfix = 0
+
 " pydiction.vim
 " http://www.vim.org/scripts/script.php?script_id=850
     let g:pydiction_location = '~/.vim/stuff/pydiction.vim/complete-dict'
+
+" fugitive
+" http://www.vim.org/scripts/script.php?script_id=2975
+    nmap <leader>gs :Gstatus<cr>
+    nmap <leader>gc :Gcommit<cr>
+
+" powerline
+" https://github.com/Lokaltog/vim-powerline
