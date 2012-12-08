@@ -10,9 +10,9 @@
 #    Created by Ruoyan Wong on 2012/11/06.
 
 import os
-import sys
-import time
 import subprocess
+from re import search
+from time import strftime
 from multiprocessing import Pool
 from argparse import ArgumentParser
 
@@ -25,47 +25,39 @@ def running_command(command):
 if __name__ == '__main__':
 
     MAX_PROCESSES = 200
-    LOG_DIRECTORY = '%s/logging' % os.environ['HOME']
+    HOME = os.environ['HOME']
+    LOG_DIRECTORY = '%s/logging' % HOME
 
     parser = ArgumentParser(description='Process some integers.')
-    parser.add_argument('-p', dest='port',     help='ssh port, (default: %(default)s)', type=int, default=22    )
-    parser.add_argument('-u', dest='username', help='user name, (default: %(default)s)',          default='root')
-    parser.add_argument('-f', dest='target',   help='server address', required=True )
-    parser.add_argument('-i', dest='secret',   help='identity file')
-    parser.add_argument('-s', dest='shadow',   help='password file')
-    parser.add_argument('-e', dest='script',   help='script want to run')
-    args = parser.parse_args()
+    parser.add_argument('-c', dest='script',   help='expect script', required=True )
+    parser.add_argument('-f', dest='target',   help='server list', required=True )
+    parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
+    parser.add_argument('-u', dest='username', help='username, (default: %(default)s)', default='root')
+    parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
+    parser.add_argument('-s', dest='shadow',   help='user password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
+    parser.add_argument('-e', dest='commands', help='commands file')
+    parser.add_argument('-b', dest='procs',    help='max process number, (default: %(default)s)', default=250)
+    opts = vars(parser.parse_args())
 
-    sys.exit(1)
-
-    try:
-        script = sys.argv[1]
-        target = sys.argv[2]
-    except Exception:
-        print "Usage:\n    python multiexpect.py expect_commands.exp host-address.txt [task_file]"
-        sys.exit(1)
-
-    subdirectories = '%s/%s' % (LOG_DIRECTORY, time.strftime("%Y%m%d%H%M"))
+    subdirectories = '%s/%s' % (LOG_DIRECTORY, strftime("%Y%m%d%H%M"))
     running_command('mkdir -p %s' % subdirectories)
     running_command('mv -f %s/*.ssh %s' % (LOG_DIRECTORY, subdirectories))
     running_command('mv -f %s/*.txt %s' % (LOG_DIRECTORY, subdirectories))
     running_command('mv -f %s/*.ping %s' % (LOG_DIRECTORY, subdirectories))
 
-    file = open(target)
+    file = open(opts['target'])
     hosts = list()
     for oneline in file:
-        oneline = oneline.rsplit()[0]
-        hosts.append(oneline.split(','))
+        hosts.append(oneline.rsplit()[0])
     file.close()
 
-    pool = Pool(processes=MAX_PROCESSES)
+    pool = Pool(processes=opts['procs'])
 
     for host in hosts:
-        if len(sys.argv) == 4:
-            tasks  = sys.argv[3]
-            command = 'expect %s u %s h %s e %s' % (username, script, host[0], tasks)
-        elif len(sys.argv) == 3:
-            command = 'expect %s h %s' % (script, host[0])
+        if search('ssh_checking.exp', opts['script']) is not None: 
+            command = 'expect %s u %s h %s p %s i %s s %s' % (opts['script'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'])
+        elif search('run_commands.exp', opts['script']) is not None: 
+            command = 'expect %s u %s h %s p %s i %s s %s e %s' % (opts['script'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['commands'])
         pool.apply_async(running_command, (command, ))
 
     pool.close()
