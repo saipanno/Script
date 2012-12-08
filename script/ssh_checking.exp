@@ -5,12 +5,6 @@ set timeout 45
 set PROMPT "(%|>|#|\\\$) $"
 set LOGDIR "$env(HOME)/logging"
 
-# 设定部分参数的默认值.
-set info(port)   "22" 
-set info(user)   "root"
-set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
-set info(shadow) "$env(HOME)/.ssh/password.ku"
-
 # 解析参数,存入数组中.
 if { $argc>=2 } {
     for {set x 0} {$x<$argc} {incr x 2} {
@@ -26,17 +20,6 @@ if { $argc>=2 } {
         }
         if { [expr {$nexts + 1}] > $argc } break 
     }
-} elseif { $argc==1 } {
-    set info(address) [lindex $argv 0]
-}
-
-# 判断传参是否符合要求:
-#    变量info(address)必须存在. 
-#
-if { ![info exists info(address)] } {
-    puts "usage: "
-    puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[d address\] \[s shadow\]"
-    exit
 }
 
 # 从shadow中读取密码存入数组中,如文件不存在则初始化空数组.
