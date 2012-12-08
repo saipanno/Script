@@ -5,7 +5,7 @@ set timeout 45
 set PROMPT "(%|>|#|\\\$) $"
 set LOGDIR "$env(HOME)/logging"
 
-# 设定部分参数的默认值。
+# 设定部分参数的默认值.
 set info(port)   "22" 
 set info(user)   "root"
 set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
@@ -31,15 +31,15 @@ if { $argc>=2 } {
 }
 
 # 判断传参是否符合要求:
-#    变量info(address)必须存在
-#    变量info(script)必须存在,且文件存在
+#    变量info(address)必须存在.
+#    变量info(script)必须存在,且文件存在.
 if { ![info exists info(address)] || ![info exists info(shadow)] || ![file exists info(shadow)]} { 
     puts "usage: "
     puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[d address\] \[s shadow\] \[e script\]"
     exit
 }
 
-# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组
+# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组.
 if { [info exists info(shadow)] && [file exists info(shadow)] } { 
     set count 0
     set file [open $info(shadow) r]

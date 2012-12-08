@@ -5,7 +5,7 @@ set timeout 45
 set PROMPT "(%|>|#|\\\$) $"
 set LOGDIR "$env(HOME)/logging"
 
-# 设定部分参数的默认值。
+# 设定部分参数的默认值.
 set info(port)   "22" 
 set info(user)   "root"
 set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
@@ -39,7 +39,7 @@ if { ![info exists info(address)] } {
     exit
 }
 
-# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组
+# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组.
 if { [info exists info(shadow)] && [file exists info(shadow)] } { 
     set count 0
     set file [open $info(shadow) r]
