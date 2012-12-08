@@ -113,5 +113,6 @@ endif
     nmap <leader>gs :Gstatus<cr>
     nmap <leader>gc :Gcommit<cr>
 
-" powerline
-" https://github.com/Lokaltog/vim-powerline
+" 设置状态栏格式
+set laststatus=2
+set statusline=%F%m%r%h%w\ %{fugitive#statusline()}\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ [%{strftime(\"%d/%m/%y\ -\ %H:%M\")}]
