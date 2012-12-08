@@ -24,7 +24,6 @@ def running_command(command):
 
 if __name__ == '__main__':
 
-    MAX_PROCESSES = 200
     HOME = os.environ['HOME']
     LOG_DIRECTORY = '%s/logging' % HOME
 
