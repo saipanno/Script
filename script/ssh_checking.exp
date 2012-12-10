@@ -36,19 +36,19 @@ if { [info exists info(shadow)] && [file exists info(shadow)] } {
 }
 
 # 根据用户传递参数设定ssh命令
-set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
+set ssh "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
 foreach {key value} [array get info] {
     if {$key == "user"} { 
-        append parameters " " "-l $value" 
+        append ssh " " "-l $value" 
     } elseif {$key == "port"} { 
-        append parameters " " "-p $value"
+        append ssh " " "-p $value"
     } elseif {$key == "secret"} {
-        append parameters " " "-i $value"
+        append ssh " " "-i $value"
     }   
 }
 
 # 使用{*}关闭spawn的参数异常情况
-spawn {*}$parameters $info(address)
+spawn {*}$ssh $info(address)
 
 set count 0
 

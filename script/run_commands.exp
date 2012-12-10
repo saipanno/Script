@@ -11,21 +11,23 @@ if { $argc>=2 } {
         set opt [lindex $argv $x]
         set nexts [expr {$x + 1}]
         switch -glob $opt {
-            "u" { set info(user)    [lindex $argv $nexts] }
-            "p" { set info(port)    [lindex $argv $nexts] }
-            "e" { set info(script)  [lindex $argv $nexts] }
-            "i" { set info(secret)  [lindex $argv $nexts] }
-            "s" { set info(shadow)  [lindex $argv $nexts] }
-            "h" { set info(address) [lindex $argv $nexts] }
+            "u" { set config(user)    [lindex $argv $nexts] }
+            "p" { set config(port)    [lindex $argv $nexts] }
+            "e" { set config(script)  [lindex $argv $nexts] }
+            "i" { set config(secret)  [lindex $argv $nexts] }
+            "s" { set config(shadow)  [lindex $argv $nexts] }
+            "h" { set config(address) [lindex $argv $nexts] }
+            "l" { set config(log)     [lindex $argv $nexts] }
+            "t" { set config(type)    [lindex $argv $nexts] }
         }
         if { [expr {$nexts + 1}] > $argc } break 
     }
 }
 
 # 从shadow中读取密码存入数组中,如文件不存在则初始化空数组.
-if { [info exists info(shadow)] && [file exists info(shadow)] } { 
+if { [info exists config(shadow)] && [file exists config(shadow)] } { 
     set count 0
-    set file [open $info(shadow) r]
+    set file [open $config(shadow) r]
     while { [ gets $file oneline ]>=0 } { 
         set password($count) $oneline
         incr count
@@ -36,22 +38,24 @@ if { [info exists info(shadow)] && [file exists info(shadow)] } {
 }
 
 # 根据用户传递参数设定ssh命令
-set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
-foreach {key value} [array get info] {
+set ssh "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
+foreach {key value} [array get config] {
     if {$key == "user"} { 
-        append parameters " " "-l $value" 
+        append ssh " " "-l $value" 
     } elseif {$key == "port"} { 
-        append parameters " " "-p $value"
+        append ssh " " "-p $value"
     } elseif {$key == "secret"} {
-        append parameters " " "-i $value"
+        append ssh " " "-i $value"
     }   
+}
+set count 0
+if { [info exists config(type)] && $config(type) == "run" } { 
+    set file [open $config(script) r]
 }
 
 # 使用{*}关闭spawn的参数异常情况
-spawn {*}$parameters $info(address)
+spawn {*}$ssh $config(address)
 
-set count 0
-set file [open $info(script) r]
 expect {
     # 匹配到"Permission denied"关键字自动将密码跳转到下一条记录，主要目的为可自动尝试多个密码。
     "Permission denied" {
@@ -64,48 +68,55 @@ expect {
             send "$password($count)\r"
             exp_continue
         } else {
-            log_file $LOGDIR/$info(address).txt
-            send_user "$info(address)\n"
+            set status "nopasswd"
             exit
         }
     }
     "No route to host" {
-        log_file $LOGDIR/$info(address).txt
-        send_user "noroute\n"
+        set status "noroute"
         exit
     }
     "Connection refused" {
-        log_file $LOGDIR/$info(address).txt
-        send_user "refused\n"
+        set status "refused"
         exit
     }
     "Connection closed" {
-        log_file $LOGDIR/$info(address).txt
-        send_user "closed\n"
+        set status "closed"
         exit
     }
     "Connection reset" {
-        log_file $LOGDIR/$info(address).txt
-        send_user "reset\n"
+        set status "reset"
         exit
     }
     "Connection timed out" {
-        log_file $LOGDIR/$info(address).txt
-        send_user "timeout\n"
+        set status "timeout"
         exit
     }
     -re "$PROMPT" {
-        log_file $LOGDIR/$info(address).txt
-        while { [ gets $file CMD ]>=0 } { 
-            send -- "$CMD\n"
+        set status "success" 
+        if { $config(type) == "run" } {
+            while { [ gets $file CMD ]>=0 } { 
+                send -- "$CMD\n"
+            } 
+        } elseif { $config(type) == "test" }  {
+            exit
+        } elseif { $config(type) == "interact" } {
+            interact
         } 
     }
     timeout {
-        log_file $LOGDIR/$info(address).txt
-        send_user "timeout\n"
+        set status "timeout"
         exit
     }
+    eof
 }
 
-close $file
-expect eof
+if { [info exists file] } {
+    close $file
+}
+
+if { $config(type) != "interact"} {
+    expect eof
+}
+
+puts $status.stat
