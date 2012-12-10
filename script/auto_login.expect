@@ -27,6 +27,7 @@ if { $argc>=2 } {
 } elseif { $argc==1 && [lindex $argv 0]=="help" } {
     puts "Usage: auto_login.exp\n" 
     puts "optional arguments:\n"
+    puts " o OPERATE    operate type, (support: run, test, interact)"
     puts " u USERNAME   username"
     puts " p PORT       ssh port"
     puts " c SCRIPT     remote command file"
@@ -35,16 +36,16 @@ if { $argc>=2 } {
     puts " a ADDRESS    server ip address"
     puts " d LOGDIR     process logdir"
     puts " t TIMEOUT    ssh timeout"
-    puts " o OPERATE    operate type, (support: run, test, interact)"
     exit
 }
 
 # 常量设定
+log_user 0  # 关闭标准输出
 set timeout $config(time)
 set PROMPT "(%|>|#|\\\$) $"
 
 # 从shadow文件中读取密码存入数组中,如该文件不存在则初始化空数组.
-if { [info exists config(shadow)] && [file exists config(shadow)] } { 
+if { [info exists config(shadow)] && [file exists $config(shadow)] } { 
     set count 0
     set file [open $config(shadow) r]
     while { [ gets $file oneline ]>=0 } { 
@@ -58,9 +59,9 @@ if { [info exists config(shadow)] && [file exists config(shadow)] } {
 }
 
 # 打开待执行命令列表的文件句柄,如该文件不存在则将操作改为test
-if { [info exists config(operate)] && $config(operate) == "run" && [file exists config(operate)]} { 
+if { [info exists config(operate)] && $config(operate) == "run" && [file exists $config(script)]} { 
     set file [open $config(script) r]
-} elseif { [info exists config(operate)] && $config(operate) == "run" && ![file exists config(operate)]} {
+} elseif { [info exists config(operate)] && $config(operate) == "run" && ![file exists $config(script)]} {
     set config(operate) "test"
 }
 
@@ -136,11 +137,13 @@ expect {
         puts "ha! eof"
         if { $config(operate) == "run" } {
             close $file
-            log_file $config(logdir)/$config(address).txt
-            send_user "$expect_out(buffer)"
+            set file [open $config(logdir)/$config(address).txt a]
+            puts $file "$expect_out(buffer)"
+            close $file
         } elseif { $config(operate) == "test" }  {
-            log_file $config(logdir)/$status.stat
-            send_user "$config(address)\n"
+            set file [open $config(logdir)/$status.stat a]
+            puts $file "$config(address)"
+            close $file
         }
     }
 }
