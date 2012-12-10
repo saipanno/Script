@@ -11,7 +11,6 @@
 
 import os
 import subprocess
-from re import search
 from time import strftime
 from multiprocessing import Pool
 from argparse import ArgumentParser
@@ -25,29 +24,30 @@ def running_command(command):
 if __name__ == '__main__':
 
     HOME = os.environ['HOME']
-    LOG_DIRECTORY = '%s/logging' % HOME
+    AUTO_EXPECT = '%s/bin/auto_login.exp' % HOME
 
     parser = ArgumentParser()
-    parser.add_argument('-c', dest='script',   help='expect script', required=True)
-    parser.add_argument('-f', dest='target',   help='server list', required=True)
+    parser.add_argument('-o', dest='operate',  help='operate to do', required=True)
+    parser.add_argument('-f', dest='target',   help='server address file', required=True)
     parser.add_argument('-u', dest='username', help='username, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
-    parser.add_argument('-l', dest='log',      help='log level to record, (default: %(default)s)', default='stat')
+    parser.add_argument('-l', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
     parser.add_argument('-s', dest='shadow',   help='user password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
     parser.add_argument('-b', dest='procs',    help='max process number, (default: %(default)s)', default=250)
+    parser.add_argument('-t', dest='timeout',  help='timeout second, (default: %(default)s)', default=45)
     ssh_checking_group = parser.add_argument_group('SCRIPT:ssh_checking')
     run_commands_group = parser.add_argument_group('SCRIPT:run_commands')
-    run_commands_group.add_argument('-e', dest='commands', help='commands file')
+    run_commands_group.add_argument('-c', dest='commands', help='remote command file')
     opts = vars(parser.parse_args())
 
-    subdirectories = '%s/%s' % (LOG_DIRECTORY, strftime("%Y%m%d%H%M"))
+    subdirectories = '%s/%s' % (opts['logdir'], strftime("%Y%m%d%H%M"))
     running_command('mkdir -p %s' % subdirectories)
-    running_command('mv -f %s/*.txt %s' % (LOG_DIRECTORY, subdirectories))
-    running_command('mv -f %s/*.stat %s' % (LOG_DIRECTORY, subdirectories))
+    running_command('mv -f %s/*.txt %s' % (opts['logdir'], subdirectories))
+    running_command('mv -f %s/*.stat %s' % (opts['logdir'], subdirectories))
 
-    file = open(opts['target'])
     hosts = list()
+    file = open(opts['target'])
     for oneline in file:
         hosts.append(oneline.rsplit()[0])
     file.close()
@@ -55,10 +55,10 @@ if __name__ == '__main__':
     pool = Pool(processes=opts['procs'])
 
     for host in hosts:
-        if search('ssh_checking.exp', opts['script']) is not None: 
-            command = 'expect %s u %s h %s p %s i %s s %s' % (opts['script'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'])
-        elif search('run_commands.exp', opts['script']) is not None: 
-            command = 'expect %s u %s h %s p %s i %s s %s e %s' % (opts['script'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['commands'])
+        if opts['operate'] == "test": 
+            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s' % (AUTO_EXPECT, opts['operate'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'])
+        elif opts['operate'] == "run": 
+            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s c %s' % (AUTO_EXPECT, opts['operate'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'], opts['commands'])
         pool.apply_async(running_command, (command, ))
 
     pool.close()
