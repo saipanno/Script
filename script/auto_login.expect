@@ -1,18 +1,10 @@
 #!/usr/bin/expect -f
-
-# 常量设定
-set timeout 30
-set PROMPT "(%|>|#|\\\$) $"
-
-# 根据用于调用auto_login.expect命令的别名设定部分参数的默认值。
-switch -regexp $argv0 {
-    "ssh.ku" { 
-        set info(port)   "22" 
-        set info(user)   "root"
-        set info(secret) "$env(HOME)/.ssh/id_rsa.ku"
-        set info(shadow) "$env(HOME)/.ssh/password.ku"
-    }
-}
+#
+#    auto_login.exp,
+#
+#         多功能expect脚本,支持交互登录/SSH测试以及远程命令执行功能 
+#
+#    Created by Ruoyan Wong on 2012/12/10.
 
 # 解析参数,存入数组中.
 if { $argc>=2 } {
@@ -20,79 +12,135 @@ if { $argc>=2 } {
         set opt [lindex $argv $x]
         set nexts [expr {$x + 1}]
         switch -glob $opt {
-            "u" { set info(user)    [lindex $argv $nexts] }
-            "p" { set info(port)    [lindex $argv $nexts] }
-            "i" { set info(secret)  [lindex $argv $nexts] }
-            "s" { set info(shadow)  [lindex $argv $nexts] }
-            "h" { set info(address) [lindex $argv $nexts] }
+            "u" { set config(user)    [lindex $argv $nexts] }
+            "p" { set config(port)    [lindex $argv $nexts] }
+            "c" { set config(script)  [lindex $argv $nexts] }
+            "i" { set config(secret)  [lindex $argv $nexts] }
+            "s" { set config(shadow)  [lindex $argv $nexts] }
+            "a" { set config(address) [lindex $argv $nexts] }
+            "d" { set config(logdir)  [lindex $argv $nexts] }
+            "t" { set config(time)    [lindex $argv $nexts] }
+            "o" { set config(operate) [lindex $argv $nexts] }
         }
         if { [expr {$nexts + 1}] > $argc } break 
     }
-} elseif { $argc==1 } {
-    set info(address) [lindex $argv 0]
-}
-
-# 判断传参是否符合要求:
-#    变量info(address)必须存在
-#
-if { ![info exists info(address)] } {
-    puts "usage: "
-    puts "  $argv0 \[u name\] \[p port\] \[i identity\] \[d address\] \[s shadow\]"
+} elseif { $argc==1 && [lindex $argv 0]=="help" } {
+    puts "Usage: auto_login.exp\n" 
+    puts "optional arguments:\n"
+    puts " u USERNAME   username"
+    puts " p PORT       ssh port"
+    puts " c SCRIPT     remote command file"
+    puts " i SECRET     user identity file"
+    puts " s SHADOW     user password file"
+    puts " a ADDRESS    server ip address"
+    puts " d LOGDIR     process logdir"
+    puts " t TIMEOUT    ssh timeout"
+    puts " o OPERATE    operate type, (support: run, test, interact)"
     exit
 }
 
-# 从shadow中读取密码存入数组中,如文件不存在则初始化空数组
-if { [info exists info(shadow)] && [file exists info(shadow)] } {
+# 常量设定
+set timeout $config(time)
+set PROMPT "(%|>|#|\\\$) $"
+
+# 从shadow文件中读取密码存入数组中,如该文件不存在则初始化空数组.
+if { [info exists config(shadow)] && [file exists config(shadow)] } { 
     set count 0
-    set file [open $info(shadow) r]
-    while { [ gets $file oneline ]>=0 } {
+    set file [open $config(shadow) r]
+    while { [ gets $file oneline ]>=0 } { 
         set password($count) $oneline
         incr count
-    } 
+    }   
     close $file
+    set count 0
 } else {
     array set password []
 }
 
+# 打开待执行命令列表的文件句柄,如该文件不存在则将操作改为test
+if { [info exists config(operate)] && $config(operate) == "run" && [file exists config(operate)]} { 
+    set file [open $config(script) r]
+} elseif { [info exists config(operate)] && $config(operate) == "run" && ![file exists config(operate)]} {
+    set config(operate) "test"
+}
+
 # 根据用户传递参数设定ssh命令
-set parameters "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
-foreach {key value} [array get info] {
+set commands "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
+foreach {key value} [array get config] {
     if {$key == "user"} { 
-        append parameters " " "-l $value" 
+        append commands " " "-l $value" 
     } elseif {$key == "port"} { 
-        append parameters " " "-p $value"
+        append commands " " "-p $value"
     } elseif {$key == "secret"} {
-        append parameters " " "-i $value"
+        append commands " " "-i $value"
     }   
 }
 
 # 使用{*}关闭spawn的参数异常情况
-spawn {*}$parameters $info(address)
-
-set count 0
-
+spawn {*}$commands $config(address)
 expect {
     # 匹配到"Permission denied"关键字自动将密码跳转到下一条记录，主要目的为可自动尝试多个密码。
-	"Permission denied" {
+    "Permission denied" {
         incr count
         exp_continue
     }
     "*?assword:*" {
     # 从密码数组中获取当前密码，当密码不存在时表示密码尝试失败，退出。
         if [info exists password($count)] {
-            puts "\n -> Use $password($count) try."
             send "$password($count)\r"
             exp_continue
         } else {
-            puts "\n -> Authentication failed, quit."
-            exit
+            set status "nopasswd"
+            exp_continue
         }
     }
-    -re "$PROMPT" {
-        interact
+    "No route to host" {
+        set status "noroute"
+        exp_continue
     }
-    timeout { 
-        puts "\n -> Connection timeout, quit."
-        exit
+    "Connection refused" {
+        set status "refused"
+        exp_continue
+    }
+    "Connection closed" {
+        set status "closed"
+        exp_continue
+    }
+    "Connection reset" {
+        set status "reset"
+        exp_continue
+    }
+    "Connection timed out" {
+        set status "timeout"
+        exp_continue
+    }
+    -re "$PROMPT" {
+        set status "success" 
+        if { $config(operate) == "run" } {
+            while { [ gets $file CMD ]>=0 } { 
+                send -- "$CMD\n"
+            } 
+            exp_continue
+        } elseif { $config(operate) == "test" }  {
+            send -- "exit\n"
+            exp_continue
+        } elseif { $config(operate) == "interact" } {
+            interact
+        } 
+    }
+    timeout {
+        set status "timeout"
+        exp_continue
+    }
+    eof {
+        puts "ha! eof"
+        if { $config(operate) == "run" } {
+            close $file
+            log_file $config(logdir)/$config(address).txt
+            send_user "$expect_out(buffer)"
+        } elseif { $config(operate) == "test" }  {
+            log_file $config(logdir)/$status.stat
+            send_user "$config(address)\n"
+        }
     }
 }
