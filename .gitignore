@@ -1,4 +1,5 @@
 ssh.*
+*.pyc
 id_rsa.*
 password*
 known_hosts
