@@ -23,7 +23,7 @@ if __name__ == '__main__':
     opts = dict()
     if re.search('ssh.ku', sys.argv[0]) is not None:
         opts['port'] = 22
-        opts['username'] = 'root'
+        opts['user'] = 'root'
         opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
         opts['shadow'] = '%s/.ssh/password.ku' % HOME
 
