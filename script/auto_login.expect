@@ -6,43 +6,56 @@
 #
 #    Created by Ruoyan Wong on 2012/12/10.
 
+
 # 解析参数,存入数组中.
-if { $argc>=2 } {
-    for {set x 0} {$x<$argc} {incr x 2} {
-        set opt [lindex $argv $x]
-        set nexts [expr {$x + 1}]
-        switch -glob $opt {
-            "u" { set config(user)    [lindex $argv $nexts] }
-            "p" { set config(port)    [lindex $argv $nexts] }
-            "c" { set config(script)  [lindex $argv $nexts] }
-            "i" { set config(secret)  [lindex $argv $nexts] }
-            "s" { set config(shadow)  [lindex $argv $nexts] }
-            "a" { set config(address) [lindex $argv $nexts] }
-            "d" { set config(logdir)  [lindex $argv $nexts] }
-            "t" { set config(time)    [lindex $argv $nexts] }
-            "o" { set config(operate) [lindex $argv $nexts] }
-        }
-        if { [expr {$nexts + 1}] > $argc } break 
+for {set x 0} {$x<$argc} {incr x 2} {
+    set opt [lindex $argv $x]
+    set nexts [expr {$x + 1}]
+    switch -glob $opt {
+        "u" { set config(user)    [lindex $argv $nexts] }
+        "p" { set config(port)    [lindex $argv $nexts] }
+        "c" { set config(script)  [lindex $argv $nexts] }
+        "i" { set config(secret)  [lindex $argv $nexts] }
+        "s" { set config(shadow)  [lindex $argv $nexts] }
+        "a" { set config(address) [lindex $argv $nexts] }
+        "d" { set config(logdir)  [lindex $argv $nexts] }
+        "t" { set config(time)    [lindex $argv $nexts] }
+        "o" { set config(operate) [lindex $argv $nexts] }
+        default {incr x -1}
     }
-} elseif { $argc==1 && [lindex $argv 0]=="help" } {
-    puts "Usage: auto_login.exp\n" 
-    puts "optional arguments:\n"
-    puts " o OPERATE    operate type, (support: run, test, interact)"
-    puts " u USERNAME   username"
-    puts " p PORT       ssh port"
-    puts " c SCRIPT     remote command file"
-    puts " i SECRET     user identity file"
-    puts " s SHADOW     user password file"
-    puts " a ADDRESS    server ip address"
-    puts " d LOGDIR     process logdir"
-    puts " t TIMEOUT    ssh timeout"
+    if { [expr {$nexts + 1}] > $argc } break 
+}
+
+# 定义帮助文档
+set help "Usage: auto_login.expect \[arguments\]: \n
+required arguments:
+    o  operate type, (support: run, test, interact)
+    a  server address
+optional arguments:
+    u  user
+    p  port
+    c  remote command file
+    i  identity file
+    s  password file
+    d  logdir setting
+    t  timeout setting"
+# 执行参数检查操作,异常情况打印帮助文档并退出
+if { $argc==1 && [lindex $argv 0]=="help" } {
+    puts $help
+    exit
+} elseif { ![info exists config(address)] || ![info exists config(operate)] || $config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact" } {
+    puts $help
     exit
 }
 
 # 常量设定
 log_user 0  # 关闭标准输出
-set timeout $config(time)
 set PROMPT "(%|>|#|\\\$) $"
+
+# 设定expect脚本超时时间
+if { [info exists config(time)] } {
+    set timeout $config(time)
+}
 
 # 从shadow文件中读取密码存入数组中,如该文件不存在则初始化空数组.
 if { [info exists config(shadow)] && [file exists $config(shadow)] } { 
