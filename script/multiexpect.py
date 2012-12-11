@@ -27,8 +27,8 @@ if __name__ == '__main__':
     AUTO_EXPECT = '%s/bin/auto_login.expect' % HOME
 
     parser = ArgumentParser()
+    parser.add_argument('target',   help='server address file')
     parser.add_argument('-o', dest='operate',  help='operate type, (support: run, test)', required=True)
-    parser.add_argument('-f', dest='target',   help='server address file, (default: %(default)s)', default='%s/hosts.txt' % HOME)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
     parser.add_argument('-l', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
@@ -36,9 +36,8 @@ if __name__ == '__main__':
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',  help='timeout, (default: %(default)s)', default=45)
-    ssh_checking_group = parser.add_argument_group('SCRIPT:ssh_checking')
-    run_commands_group = parser.add_argument_group('SCRIPT:run_commands')
-    run_commands_group.add_argument('-c', dest='commands', help='remote command file')
+    run_commands_group = parser.add_argument_group('OPERATE: run')
+    run_commands_group.add_argument('-c', dest='commands', help='remote command file, required')
     opts = vars(parser.parse_args())
 
     subdirectories = '%s/%s' % (opts['logdir'], strftime("%Y%m%d%H%M"))
