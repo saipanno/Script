@@ -27,15 +27,15 @@ if __name__ == '__main__':
     AUTO_EXPECT = '%s/bin/auto_login.expect' % HOME
 
     parser = ArgumentParser()
-    parser.add_argument('-o', dest='operate',  help='operate to do, support:(run, test)', required=True)
+    parser.add_argument('-o', dest='operate',  help='operate type, (support: run, test)', required=True)
     parser.add_argument('-f', dest='target',   help='server address file, (default: %(default)s)', default='%s/hosts.txt' % HOME)
-    parser.add_argument('-u', dest='username', help='username, (default: %(default)s)', default='root')
+    parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
     parser.add_argument('-l', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
-    parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
-    parser.add_argument('-s', dest='shadow',   help='user password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
-    parser.add_argument('-b', dest='procs',    help='max process number, (default: %(default)s)', default=250, type=int)
-    parser.add_argument('-t', dest='timeout',  help='timeout second, (default: %(default)s)', default=45)
+    parser.add_argument('-i', dest='secret',   help='identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
+    parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
+    parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-t', dest='timeout',  help='timeout, (default: %(default)s)', default=45)
     ssh_checking_group = parser.add_argument_group('SCRIPT:ssh_checking')
     run_commands_group = parser.add_argument_group('SCRIPT:run_commands')
     run_commands_group.add_argument('-c', dest='commands', help='remote command file')
@@ -56,9 +56,9 @@ if __name__ == '__main__':
 
     for host in hosts:
         if opts['operate'] == "test": 
-            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s' % (AUTO_EXPECT, opts['operate'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'])
+            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s' % (AUTO_EXPECT, opts['operate'], opts['user'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'])
         elif opts['operate'] == "run": 
-            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s c %s' % (AUTO_EXPECT, opts['operate'], opts['username'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'], opts['commands'])
+            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s c %s' % (AUTO_EXPECT, opts['operate'], opts['user'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'], opts['commands'])
         pool.apply_async(running_command, (command, ))
 
     pool.close()
