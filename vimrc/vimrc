@@ -118,4 +118,6 @@ endif
 " https://github.com/ybian/smartim
     if has("macunix")
         let g:smartim_status = "enable"
+    else
+        let g:smartim_status = "disable"
     endif
