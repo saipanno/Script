@@ -8,15 +8,16 @@ set nocompatible
 "                 
 """""""""""""""""""""""""""""""""""""""
 
-if has("gui_running")
+if has("gui_macvim")
+    set background=light
     set background=dark
     colorscheme solarized
+    " macvim中,输入法自动切换
+    set noimd
+    set imi=2
+    set ims=2
 else
-    " colorscheme vibrantink
-    " colorscheme molokai
-    " let g:molokai_original = 0
-    set background=dark
-    colorscheme solarized
+    colorscheme vibrantink
 endif
 
     set number          " Display line number
@@ -57,11 +58,6 @@ endif
 " Backspace and cursor keys wrap to previous/next line
     set backspace=indent,eol,start 
     set whichwrap+=<,>,[,]
-
-" 在命令模式中，输入法自动会被禁用，而进入插入模式后，可以正常使用输入法。ESC退出到命令模式时，会自动禁用输入法。
-"    set noimd
-"    set imi=2
-"    set ims=2
 
 " 缩写设置, <tab>自动替换 
     iab ryw Ruoyan Wong
