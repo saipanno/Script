@@ -13,7 +13,10 @@ import os
 import re
 import sys
 import subprocess
-from argparse import ArgumentParser
+try:
+    from argparse import ArgumentParser as SuckArgumentParser
+except Exception:
+    form optparse import OptionParser as SuckArgumentParser
 
 if __name__ == '__main__':
 
@@ -40,8 +43,8 @@ if __name__ == '__main__':
         opts['secret'] = '%s/.ssh/id_rsa' % HOME
         opts['shadow'] = '%s/.ssh/password' % HOME
 
-    parser = ArgumentParser()
-    parser.add_argument('-a', dest='address',  help='server address')
+    parser = SuckArgumentParser() 
+    parser.add_argument('address', help='server address')
     parser.add_argument('-u', dest='username', help='username')
     parser.add_argument('-p', dest='port',     help='port')
     parser.add_argument('-i', dest='secret',   help='user identity file')
