@@ -29,16 +29,16 @@ for {set x 0} {$x<$argc} {incr x 2} {
 # 定义帮助文档
 set help "Usage: auto_login.expect \[arguments\]: \n
 required arguments:
-    o  operate type, (support: run, test, interact)
-    a  server address
+    o  OPERATE operate type, (support: run, test, interact)
+    a  ADDRESS server address
 optional arguments:
-    u  user
-    p  port
-    c  remote command file
-    i  identity file
-    s  password file
-    d  logdir setting
-    t  timeout setting"
+    u  USER    user
+    p  PORT    port
+    c  SCRIPT  command file
+    i  SECRET  identity file
+    s  SHADOW  password file
+    d  LOGDIR  log directory
+    t  TIMEOUT timeout"
 # 执行参数检查操作,异常情况打印帮助文档并退出
 if { $argc==1 && [lindex $argv 0]=="help" } {
     puts $help
