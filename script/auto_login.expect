@@ -49,7 +49,7 @@ if { $argc==1 && [lindex $argv 0]=="help" } {
 }
 
 # 常量设定
-log_user 0  # 关闭标准输出
+log_user 0
 set PROMPT "(%|>|#|\\\$) $"
 
 # 设定expect脚本超时时间
@@ -66,7 +66,6 @@ if { [info exists config(shadow)] && [file exists $config(shadow)] } {
         incr count
     }   
     close $file
-    set count 0
 } else {
     array set password []
 }
@@ -90,6 +89,7 @@ foreach {key value} [array get config] {
     }   
 }
 
+set count 0
 # 使用{*}关闭spawn的参数异常情况
 spawn {*}$commands $config(address)
 expect {
@@ -150,6 +150,7 @@ expect {
         puts "ha! eof"
         if { $config(operate) == "run" } {
             close $file
+            puts "write log!"
             set file [open $config(logdir)/$config(address).txt a]
             puts $file "$expect_out(buffer)"
             close $file
