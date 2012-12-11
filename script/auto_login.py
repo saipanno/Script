@@ -13,14 +13,10 @@ import os
 import re
 import sys
 import subprocess
-try:
-    from argparse import ArgumentParser
-except Exception:
-    from optparse import OptionParser as ArgumentParser
+from argparse import ArgumentParser
 
 if __name__ == '__main__':
 
-    TIMEOUT = 15
     HOME = os.environ['HOME']
     AUTO_EXPECT = '%s/bin/auto_login.expect' % HOME
 
@@ -30,18 +26,6 @@ if __name__ == '__main__':
         opts['username'] = 'root'
         opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
         opts['shadow'] = '%s/.ssh/password.ku' % HOME
-    elif re.search('ssh.kr', sys.argv[0]) is not None:
-        opts['port'] = 22
-        opts['username'] = 'sndawangruoyan'
-        opts['address'] = '122.11.32.36'
-        opts['secret'] = '%s/.ssh/id_rsa' % HOME
-        opts['shadow'] = '%s/.ssh/password' % HOME
-    elif re.search('ssh.hc', sys.argv[0]) is not None:
-        opts['port'] = 7035
-        opts['username'] = 'root'
-        opts['address'] = '106.187.89.40'
-        opts['secret'] = '%s/.ssh/id_rsa' % HOME
-        opts['shadow'] = '%s/.ssh/password' % HOME
 
     parser = ArgumentParser() 
     parser.add_argument('address', help='server address')
@@ -49,10 +33,26 @@ if __name__ == '__main__':
     parser.add_argument('-p', dest='port',     help='port')
     parser.add_argument('-i', dest='secret',   help='user identity file')
     parser.add_argument('-s', dest='shadow',   help='user password file')
+    parser.add_argument('-t', dest='timeout',  help='wait to timeout', default=15)
 
     for key,value in vars(parser.parse_args()).items():
         if value is not None:
             opts[key] = value
 
-    command = 'expect %s o %s u %s a %s p %s i %s s %s t %s' % (AUTO_EXPECT, 'interact', opts['username'], opts['address'], opts['port'], opts['secret'], opts['shadow'], TIMEOUT)
+    parameters = str()
+    for key,value in opts.items():
+        if key == 'address':
+            parameters = '%s a %s' % (parameters, value)
+        elif key == 'username':
+            parameters = '%s u %s' % (parameters, value)
+        elif key == 'port':
+            parameters = '%s p %s' % (parameters, value)
+        elif key == 'secret':
+            parameters = '%s i %s' % (parameters, value)
+        elif key == 'shadow':
+            parameters = '%s s %s' % (parameters, value)
+        elif key == 'timeout':
+            parameters = '%s t %s' % (parameters, value)
+
+    command = 'expect %s o %s %s' % (AUTO_EXPECT, 'interact', parameters)
     subprocess.call('%s' % command, shell=True)
