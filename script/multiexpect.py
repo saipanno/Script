@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest='operate',  help='operate type, (support: run, test)', required=True)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
-    parser.add_argument('-l', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
+    parser.add_argument('-d', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-i', dest='secret',   help='identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
@@ -56,24 +56,25 @@ if __name__ == '__main__':
     COMMAND = 'expect %s' % AUTO_EXPECT
 
     for key,value in opts.items():
-        if key == 'operate':
+        if key == 'operate' and value is not None:
             COMMAND = '%s o %s' % (COMMAND, value)
-        elif key == 'user':
+        elif key == 'user' and value is not None:
             COMMAND = '%s u %s' % (COMMAND, value)
-        elif key == 'port':
+        elif key == 'port' and value is not None:
             COMMAND = '%s p %s' % (COMMAND, value)
-        elif key == 'secret':
+        elif key == 'secret' and value is not None:
             COMMAND = '%s i %s' % (COMMAND, value)
-        elif key == 'shadow':
+        elif key == 'shadow' and value is not None:
             COMMAND = '%s s %s' % (COMMAND, value)
-        elif key == 'logdir':
-            COMMAND = '%s l %s' % (COMMAND, value)
-        elif key == 'timeout':
+        elif key == 'logdir' and value is not None:
+            COMMAND = '%s d %s' % (COMMAND, value)
+        elif key == 'timeout' and value is not None:
             COMMAND = '%s t %s' % (COMMAND, value)
-        elif key == 'commands':
+        elif key == 'commands' and value is not None:
             COMMAND = '%s c %s' % (COMMAND, value)
 
     for host in hosts:
+        print '%s a %s' % (COMMAND, host) 
         pool.apply_async(running_command, ('%s a %s' % (COMMAND, host)))
 
     pool.close()
