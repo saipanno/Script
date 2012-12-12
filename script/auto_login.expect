@@ -44,7 +44,7 @@ optional arguments:
 if { $argc==1 && [lindex $argv 0]=="help" } {
     puts $help
     exit
-} elseif { ![info exists config(address)] || ![info exists config(operate)] || $config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact" } {
+} elseif { ![info exists config(address)] || ![info exists config(operate)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
     puts $help
     exit
 }
