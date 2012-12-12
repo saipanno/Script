@@ -39,6 +39,7 @@ optional arguments:
     s  SHADOW  password file
     d  LOGDIR  log directory
     t  TIMEOUT timeout"
+
 # 执行参数检查操作,异常情况打印帮助文档并退出
 if { $argc==1 && [lindex $argv 0]=="help" } {
     puts $help
@@ -104,29 +105,36 @@ expect {
             send "$password($count)\r"
             exp_continue
         } else {
+            # fuck! Match authentication failed!
             set status "nopasswd"
-            exp_continue
+            if { $config(operate) == "run" } {
+                set file [open $config(logdir)/$config(address).txt a]
+                puts $file $status
+                close $file
+            } elseif { $config(operate) == "test" } {
+                set file [open $config(logdir)/$status.stat a]
+                puts $file "$config(address)"
+                close $file
+            } elseif { $config(operate) == "interact" } {
+                puts "Authentication failed!"
+            }
+            exit
         }
     }
     "No route to host" {
         set status "noroute"
-        exp_continue
     }
     "Connection refused" {
         set status "refused"
-        exp_continue
     }
     "Connection closed" {
         set status "closed"
-        exp_continue
     }
     "Connection reset" {
         set status "reset"
-        exp_continue
     }
     "Connection timed out" {
         set status "timeout"
-        exp_continue
     }
     -re "$PROMPT" {
         set status "success" 
@@ -134,29 +142,49 @@ expect {
             while { [ gets $file CMD ]>=0 } { 
                 send -- "$CMD\n"
             } 
-            exp_continue
+            send -- "exit\n"
         } elseif { $config(operate) == "test" }  {
             send -- "exit\n"
-            exp_continue
         } elseif { $config(operate) == "interact" } {
             interact
+            exit
         } 
     }
     timeout {
         set status "timeout"
-        exp_continue
     }
-    eof {
-        puts "ha! eof"
-        if { $config(operate) == "run" } {
-            close $file
-            set file [open $config(logdir)/$config(address).txt a]
+}
+
+# ha! Match all nomal expect eof.
+expect eof {
+    if { [info exists file] } { close $file }
+    if { $config(operate) == "run" } {
+        set file [open $config(logdir)/$config(address).txt a]
+        if { $status == "success" } {
             puts $file "$expect_out(buffer)"
-            close $file
-        } elseif { $config(operate) == "test" }  {
-            set file [open $config(logdir)/$status.stat a]
-            puts $file "$config(address)"
-            close $file
+        } else {
+            puts $file $status
         }
+        close $file
+    } elseif { $config(operate) == "test" }  {
+        set file [open $config(logdir)/$status.stat a]
+        puts $file "$config(address)"
+        close $file
+    } elseif { $config(operate) == "interact" }  {
+        puts "Trigger exception: $status"
     }
+    exit
+}
+
+# haha! Match expect build-in timeout.
+if { $config(operate) == "run" } {
+    set file [open $config(logdir)/$config(address).txt a]
+    puts $file $status
+    close $file
+} elseif { $config(operate) == "test" }  {
+    set file [open $config(logdir)/$status.stat a]
+    puts $file "$config(address)"
+    close $file
+} elseif { $config(operate) == "test" }  {
+    puts "Trigger expect timeout"
 }
