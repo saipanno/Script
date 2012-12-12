@@ -53,12 +53,28 @@ if __name__ == '__main__':
 
     pool = Pool(processes=opts['procs'])
 
+    COMMAND = 'expect %s' % AUTO_EXPECT
+
+    for key,value in opts.items():
+        if key == 'operate':
+            COMMAND = '%s o %s' % (COMMAND, value)
+        elif key == 'user':
+            COMMAND = '%s u %s' % (COMMAND, value)
+        elif key == 'port':
+            COMMAND = '%s p %s' % (COMMAND, value)
+        elif key == 'secret':
+            COMMAND = '%s i %s' % (COMMAND, value)
+        elif key == 'shadow':
+            COMMAND = '%s s %s' % (COMMAND, value)
+        elif key == 'logdir':
+            COMMAND = '%s l %s' % (COMMAND, value)
+        elif key == 'timeout':
+            COMMAND = '%s t %s' % (COMMAND, value)
+        elif key == 'commands':
+            COMMAND = '%s c %s' % (COMMAND, value)
+
     for host in hosts:
-        if opts['operate'] == "test": 
-            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s' % (AUTO_EXPECT, opts['operate'], opts['user'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'])
-        elif opts['operate'] == "run": 
-            command = 'expect %s o %s u %s a %s p %s i %s s %s d %s t %s c %s' % (AUTO_EXPECT, opts['operate'], opts['user'], host, opts['port'], opts['secret'], opts['shadow'], opts['logdir'], opts['timeout'], opts['commands'])
-        pool.apply_async(running_command, (command, ))
+        pool.apply_async(running_command, ('%s a %s' % (COMMAND, host)))
 
     pool.close()
     pool.join()

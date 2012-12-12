@@ -39,20 +39,19 @@ if __name__ == '__main__':
         if value is not None:
             opts[key] = value
 
-    parameters = str()
+    COMMAND = 'expect %s o %s ' % (AUTO_EXPECT, 'interact')
     for key,value in opts.items():
         if key == 'address':
-            parameters = '%s a %s' % (parameters, value)
+            COMMAND = '%s a %s' % (COMMAND, value)
         elif key == 'user':
-            parameters = '%s u %s' % (parameters, value)
+            COMMAND = '%s u %s' % (COMMAND, value)
         elif key == 'port':
-            parameters = '%s p %s' % (parameters, value)
+            COMMAND = '%s p %s' % (COMMAND, value)
         elif key == 'secret':
-            parameters = '%s i %s' % (parameters, value)
+            COMMAND = '%s i %s' % (COMMAND, value)
         elif key == 'shadow':
-            parameters = '%s s %s' % (parameters, value)
+            COMMAND = '%s s %s' % (COMMAND, value)
         elif key == 'timeout':
-            parameters = '%s t %s' % (parameters, value)
+            COMMAND = '%s t %s' % (COMMAND, value)
 
-    command = 'expect %s o %s %s' % (AUTO_EXPECT, 'interact', parameters)
-    subprocess.call('%s' % command, shell=True)
+    subprocess.call('%s' % COMMAND, shell=True)
