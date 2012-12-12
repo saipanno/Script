@@ -150,7 +150,6 @@ expect {
         puts "ha! eof"
         if { $config(operate) == "run" } {
             close $file
-            puts "write log!"
             set file [open $config(logdir)/$config(address).txt a]
             puts $file "$expect_out(buffer)"
             close $file
