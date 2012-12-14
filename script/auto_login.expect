@@ -31,12 +31,12 @@ set help "Usage: auto_login.expect \[arguments\]: \n
 required arguments:
     o  OPERATE operate type, (support: run, test, interact)
     a  ADDRESS server address
-    d  LOGDIR  log directory
+    d  LOGDIR  syslog directory
 optional arguments:
     u  USER    user
     p  PORT    port
-    c  SCRIPT  command file
-    i  SECRET  identity file
+    c  SCRIPT  execute command file
+    i  SECRET  user identity file
     s  SHADOW  password file
     t  TIMEOUT expect build-in timeouts"
 
@@ -44,7 +44,16 @@ optional arguments:
 if { $argc==1 && [lindex $argv 0]=="help" } {
     puts $help
     exit
-} elseif { ![info exists config(address)] || ![info exists config(operate)] || ![info exists config(logdir)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
+} elseif { ![info exists config(address)] } {
+    puts "Error parameters: -a"
+    puts $help
+    exit
+} elseif { ![info exists config(logdir)] } { 
+    puts "Error parameters: -d"
+    puts $help
+    exit
+} elseif { ![info exists config(operate)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
+    puts "Error parameters: -o"
     puts $help
     exit
 }
