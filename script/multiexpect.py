@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest='operate',  help='operate type, (support: run, test)', required=True)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
-    parser.add_argument('-d', dest='logdir',   help='log directory, (default: %(default)s)', default='%s/logging' % HOME)
+    parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-i', dest='secret',   help='identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
