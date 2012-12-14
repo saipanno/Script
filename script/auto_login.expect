@@ -31,20 +31,20 @@ set help "Usage: auto_login.expect \[arguments\]: \n
 required arguments:
     o  OPERATE operate type, (support: run, test, interact)
     a  ADDRESS server address
+    d  LOGDIR  log directory
 optional arguments:
     u  USER    user
     p  PORT    port
     c  SCRIPT  command file
     i  SECRET  identity file
     s  SHADOW  password file
-    d  LOGDIR  log directory
-    t  TIMEOUT timeout"
+    t  TIMEOUT expect build-in timeouts"
 
 # 执行参数检查操作,异常情况打印帮助文档并退出
 if { $argc==1 && [lindex $argv 0]=="help" } {
     puts $help
     exit
-} elseif { ![info exists config(address)] || ![info exists config(operate)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
+} elseif { ![info exists config(address)] || ![info exists config(operate)] || ![info exists config(logdir)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
     puts $help
     exit
 }
