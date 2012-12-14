@@ -155,6 +155,19 @@ expect {
     }
     timeout {
         set status "timeout"
+        # haha! Match expect build-in timeout.
+        if { $config(operate) == "run" } {
+            set file [open $config(logdir)/$config(address).txt a]
+            puts $file $status
+        } elseif { $config(operate) == "test" }  {
+            set file [open $config(logdir)/$status.stat a]
+            puts $file "$config(address)"
+        } elseif { $config(operate) == "interact" }  {
+            set file [open $config(logdir)/interact.stat w]
+            puts $file "Trigger expect timeout"
+        }
+        close $file
+        exit
     }
 }
 
@@ -178,16 +191,3 @@ expect eof {
     close $file
     exit
 }
-
-# haha! Match expect build-in timeout.
-if { $config(operate) == "run" } {
-    set file [open $config(logdir)/$config(address).txt a]
-    puts $file $status
-} elseif { $config(operate) == "test" }  {
-    set file [open $config(logdir)/$status.stat a]
-    puts $file "$config(address)"
-} elseif { $config(operate) == "test" }  {
-    set file [open $config(logdir)/interact.stat w]
-    puts $file "Trigger expect timeout"
-}
-close $file
