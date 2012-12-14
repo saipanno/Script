@@ -13,7 +13,26 @@ import os
 import re
 import sys
 import subprocess
+from multiprocessing import Process
 from argparse import ArgumentParser
+
+def get_status(logdir):
+
+    subprocess.call('rm -f %s/interact.stat' % logdir, shell=True)
+    while True:
+        try:
+            file = open('%s/interact.stat' % logdir)
+            print file.readline()
+            file.close()
+            break
+        except:
+            continue
+
+def start_expect_script(COMMAND):
+    try:
+        subprocess.call('%s' % COMMAND, shell=True)
+    except:
+        pass
 
 if __name__ == '__main__':
 
@@ -26,6 +45,7 @@ if __name__ == '__main__':
         opts['user'] = 'root'
         opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
         opts['shadow'] = '%s/.ssh/password.ku' % HOME
+        opts['logdir'] = '%s/logging' % HOME
 
     parser = ArgumentParser() 
     parser.add_argument('address', help='server address')
@@ -33,6 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', dest='port',     help='port')
     parser.add_argument('-i', dest='secret',   help='identity file')
     parser.add_argument('-s', dest='shadow',   help='password file')
+    parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-t', dest='timeout',  help='timeout', default=15)
 
     for key,value in vars(parser.parse_args()).items():
@@ -51,7 +72,14 @@ if __name__ == '__main__':
             COMMAND = '%s i %s' % (COMMAND, value)
         elif key == 'shadow':
             COMMAND = '%s s %s' % (COMMAND, value)
+        elif key == 'logdir':
+            COMMAND = '%s d %s' % (COMMAND, value)
         elif key == 'timeout':
             COMMAND = '%s t %s' % (COMMAND, value)
 
-    subprocess.call('%s' % COMMAND, shell=True)
+    workers = list()
+    workers.append(Process(target=start_expect_script, args=(COMMAND, )))
+    workers.append(Process(target=get_status, args=(opts['logdir'], )))
+
+    for worker in workers: worker.start()
+    for worker in workers: worker.join()
