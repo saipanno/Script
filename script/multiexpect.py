@@ -17,7 +17,7 @@ from argparse import ArgumentParser
 
 def running_command(command):
     try:
-        do = subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
+        subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
     except Exception:
         pass
 
@@ -32,11 +32,11 @@ if __name__ == '__main__':
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
-    parser.add_argument('-i', dest='secret',   help='identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
+    parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/id_rsa' % HOME)
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/password' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
-    parser.add_argument('-t', dest='timeout',  help='timeout, (default: %(default)s)', default=45)
-    run_commands_group = parser.add_argument_group('OPERATE: run')
+    parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
+    run_commands_group = parser.add_argument_group('OPERATE: -o run')
     run_commands_group.add_argument('-c', dest='commands', help='remote command file, required')
     opts = vars(parser.parse_args())
 
