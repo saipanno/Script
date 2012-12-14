@@ -51,10 +51,10 @@ if __name__ == '__main__':
     parser.add_argument('address', help='server address')
     parser.add_argument('-u', dest='user',     help='user')
     parser.add_argument('-p', dest='port',     help='port')
-    parser.add_argument('-i', dest='secret',   help='identity file')
+    parser.add_argument('-i', dest='secret',   help='user identity file')
     parser.add_argument('-s', dest='shadow',   help='password file')
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
-    parser.add_argument('-t', dest='timeout',  help='timeout', default=15)
+    parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=15)
 
     for key,value in vars(parser.parse_args()).items():
         if value is not None:
