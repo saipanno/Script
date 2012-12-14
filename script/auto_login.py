@@ -12,25 +12,26 @@
 import os
 import re
 import sys
+import time
 import subprocess
 from multiprocessing import Process
 from argparse import ArgumentParser
 
-def get_status(logdir):
+def get_expect_script_output(logdir):
 
-    subprocess.call('rm -f %s/interact.stat' % logdir, shell=True)
     while True:
         try:
             file = open('%s/interact.stat' % logdir)
-            print file.readline()
+            print file.readline().strip()
             file.close()
             break
         except:
+            time.sleep(0.5)
             continue
 
 def start_expect_script(COMMAND):
     try:
-        subprocess.call('%s' % COMMAND, shell=True)
+        subprocess.call('%s' % COMMAND, stderr=subprocess.STDOUT, shell=True)
     except:
         pass
 
@@ -79,7 +80,7 @@ if __name__ == '__main__':
 
     workers = list()
     workers.append(Process(target=start_expect_script, args=(COMMAND, )))
-    workers.append(Process(target=get_status, args=(opts['logdir'], )))
+    workers.append(Process(target=get_expect_script_output, args=(opts['logdir'], )))
 
     for worker in workers: worker.start()
     for worker in workers: worker.join()

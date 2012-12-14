@@ -48,7 +48,7 @@ if { $argc==1 && [lindex $argv 0]=="help" } {
     puts "Error parameters: -a"
     puts $help
     exit
-} elseif { ![info exists config(logdir)] } { 
+} elseif { ![info exists config(logdir)] || ![file exists $config(logdir)] } { 
     puts "Error parameters: -d"
     puts $help
     exit
@@ -56,7 +56,12 @@ if { $argc==1 && [lindex $argv 0]=="help" } {
     puts "Error parameters: -o"
     puts $help
     exit
+} elseif { [info exists config(secret)] && ![file exists $config(secret)] } { 
+    puts "Error parameters: -i"
+    puts $help
+    exit
 }
+
 
 # 常量设定
 log_user 0
@@ -197,6 +202,6 @@ expect eof {
         set file [open $config(logdir)/interact.stat w]
         puts $file "Trigger exception: $status"
     }
-    close $file
+    if { [info exists file] } { close $file }
     exit
 }
