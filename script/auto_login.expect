@@ -110,14 +110,14 @@ expect {
             if { $config(operate) == "run" } {
                 set file [open $config(logdir)/$config(address).txt a]
                 puts $file $status
-                close $file
             } elseif { $config(operate) == "test" } {
                 set file [open $config(logdir)/$status.stat a]
                 puts $file "$config(address)"
-                close $file
             } elseif { $config(operate) == "interact" } {
-                puts "Authentication failed!"
+                set file [open $config(logdir)/interact.stat w]
+                puts $file "Authentication failed!"
             }
+            close $file
             exit
         }
     }
@@ -146,6 +146,9 @@ expect {
         } elseif { $config(operate) == "test" }  {
             send -- "exit\n"
         } elseif { $config(operate) == "interact" } {
+            set file [open $config(logdir)/interact.stat w]
+            puts $file "Node login success!"
+            close $file
             interact
             exit
         } 
@@ -165,14 +168,14 @@ expect eof {
         } else {
             puts $file $status
         }
-        close $file
     } elseif { $config(operate) == "test" }  {
         set file [open $config(logdir)/$status.stat a]
         puts $file "$config(address)"
-        close $file
     } elseif { $config(operate) == "interact" }  {
-        puts "Trigger exception: $status"
+        set file [open $config(logdir)/interact.stat w]
+        puts $file "Trigger exception: $status"
     }
+    close $file
     exit
 }
 
@@ -180,11 +183,11 @@ expect eof {
 if { $config(operate) == "run" } {
     set file [open $config(logdir)/$config(address).txt a]
     puts $file $status
-    close $file
 } elseif { $config(operate) == "test" }  {
     set file [open $config(logdir)/$status.stat a]
     puts $file "$config(address)"
-    close $file
 } elseif { $config(operate) == "test" }  {
-    puts "Trigger expect timeout"
+    set file [open $config(logdir)/interact.stat w]
+    puts $file "Trigger expect timeout"
 }
+close $file
