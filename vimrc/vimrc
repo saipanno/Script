@@ -30,19 +30,23 @@ endif
 "    set ims=2
 "endif
 
-    set number          " Display line number
-    set incsearch       " Incremental search 
-    set ignorecase      " Ignore case
+    set number          " 显示行号 
+    set incsearch       " 开启实时搜索功能 
+    set ignorecase      " 
     set confirm         " 
     set history=50      " Keep 50 lines of command line history
     set showcmd         " Display incomplete commands
     set autoread        " Auto read when file is changed from outside
     set showmatch       " Show matching bracets when text indicator is over them
     set novisualbell    " No sound on errors
-    syntax enable       " Syntax highlight
-    set cursorline      " Cursor current line
-    set encoding=utf-8  " Set default-encoding to utf-8
+    syntax enable       " 开启语法高亮 
+    set cursorline      " 突出显示当前行
+    set encoding=utf-8  " 设置默认编码
+
+    " 快捷键定义
     let mapleader=","
+    imap <C-a> <ESC>I  " Ctrl+A移动光标到行首
+    imap <C-e> <ESC>A  " Ctrl+A移动光标到行尾
 
 " <tab>设置
     set smarttab
