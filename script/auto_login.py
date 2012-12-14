@@ -19,6 +19,7 @@ from argparse import ArgumentParser
 
 def get_expect_script_output(logdir):
 
+    subprocess.call('rm -f %s/interact.stat' % logdir, shell=True)
     while True:
         try:
             file = open('%s/interact.stat' % logdir)

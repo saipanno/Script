@@ -187,7 +187,6 @@ expect {
 
 # ha! Match all nomal expect eof.
 expect eof {
-    if { [info exists file] } { close $file }
     if { $config(operate) == "run" } {
         set file [open $config(logdir)/$config(address).txt a]
         if { $status == "success" } {
@@ -201,7 +200,8 @@ expect eof {
     } elseif { $config(operate) == "interact" }  {
         set file [open $config(logdir)/interact.stat w]
         puts $file "Trigger exception: $status"
+        close $file
     }
-    if { [info exists file] } { close $file }
+    if { [info exists file1] } { close $file }
     exit
 }
