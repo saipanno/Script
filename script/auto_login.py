@@ -48,6 +48,13 @@ if __name__ == '__main__':
         opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
         opts['shadow'] = '%s/.ssh/password.ku' % HOME
         opts['logdir'] = '%s/logging' % HOME
+    elif re.search('ssh.hc', sys.argv[0]) is not None:
+        opts['port'] = 7035
+        opts['user'] = 'root'
+        opts['adderss'] = '106.187.89.40'
+        opts['secret'] = '%s/.ssh/id_rsa' % HOME
+        opts['shadow'] = '%s/.ssh/password' % HOME
+        opts['logdir'] = '%s/logging' % HOME
 
     parser = ArgumentParser() 
     parser.add_argument('address', help='server address')
@@ -78,6 +85,8 @@ if __name__ == '__main__':
             COMMAND = '%s d %s' % (COMMAND, value)
         elif key == 'timeout':
             COMMAND = '%s t %s' % (COMMAND, value)
+
+    print COMMAND
 
     workers = list()
     workers.append(Process(target=start_expect_script, args=(COMMAND, )))
