@@ -38,24 +38,24 @@ if __name__ == '__main__':
     parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
     run_commands_group = parser.add_argument_group('OPERATE: -o run')
     run_commands_group.add_argument('-c', dest='commands', help='remote command file, required')
-    opts = vars(parser.parse_args())
+    config = vars(parser.parse_args())
 
-    subdirectories = '%s/%s' % (opts['logdir'], strftime("%Y%m%d%H%M"))
+    subdirectories = '%s/%s' % (config['logdir'], strftime("%Y%m%d%H%M"))
     running_command('mkdir -p %s' % subdirectories)
-    running_command('mv -f %s/*.txt %s' % (opts['logdir'], subdirectories))
-    running_command('mv -f %s/*.stat %s' % (opts['logdir'], subdirectories))
+    running_command('mv -f %s/*.txt %s' % (config['logdir'], subdirectories))
+    running_command('mv -f %s/*.stat %s' % (config['logdir'], subdirectories))
 
     hosts = list()
-    file = open(opts['target'])
+    file = open(config['target'])
     for oneline in file:
         hosts.append(oneline.rsplit()[0])
     file.close()
 
-    pool = Pool(processes=opts['procs'])
+    pool = Pool(processes=config['procs'])
 
     COMMAND = 'expect %s' % AUTO_EXPECT
 
-    for key,value in opts.items():
+    for key,value in config.items():
         if key == 'operate' and value is not None:
             COMMAND = '%s o %s' % (COMMAND, value)
         elif key == 'user' and value is not None:
@@ -74,7 +74,6 @@ if __name__ == '__main__':
             COMMAND = '%s c %s' % (COMMAND, value)
 
     for host in hosts:
-        print '%s a %s' % (COMMAND, host) 
         pool.apply_async(running_command, ('%s a %s' % (COMMAND, host)))
 
     pool.close()
