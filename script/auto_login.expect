@@ -2,9 +2,10 @@
 #
 #    auto_login.exp,
 #
-#         多功能expect脚本,支持交互登录/SSH测试以及远程命令执行功能 
+#         an ssh auto login expect script. support run command, ssh connect test and interact mode.
 #
-#    Created by Ruoyan Wong on 2012/12/10.
+#    Created by Ruoyan Wong(@saipanno) on 2012/12/10.
+#
 
 
 # silly globals
@@ -29,7 +30,7 @@ for {set x 0} {$x<$argc} {incr x 2} {
     if { [expr {$nexts + 1}] > $argc } break 
 }
 
-# define script help.
+# define the command-line script usage.
 set help "Usage: auto_login.expect \[arguments\]: \n
 required arguments:
     o  OPERATE operate type, (support: run, test, interact)
@@ -43,33 +44,33 @@ optional arguments:
     s  SHADOW  password file
     t  TIMEOUT expect build-in timeouts"
 
-# 执行参数检查操作,异常情况打印帮助文档并退出
+# check the command-line script arguments.
 if { $argc==1 && [lindex $argv 0]=="help" } {
-    puts stderr $help
+    puts $help
     exit
 } elseif { ![info exists config(address)] } {
-    puts stderr "Error parameters: -a"
+    puts "Error parameters: -a\n"
     puts $help
     exit
 } elseif { ![info exists config(logdir)] || ![file exists $config(logdir)] } { 
-    puts stderr "Error parameters: -d"
+    puts "Error parameters: -d\n"
     puts $help
     exit
 } elseif { ![info exists config(operate)] || ($config(operate) != "run" && $config(operate) != "test" && $config(operate) != "interact") } {
-    puts stderr "Error parameters: -o"
+    puts "Error parameters: -o\n"
     puts $help
     exit
 } elseif { $config(operate) == "run" && ![file exists $config(script)]} {
-    puts stderr "Error parameters: -o"
+    puts "Error parameters: -o\n"
     puts $help
     exit
 } elseif { [info exists config(secret)] && ![file exists $config(secret)] } { 
-    puts stderr "Error parameters: -i"
+    puts "Error parameters: -i\n"
     puts $help
     exit
 }
 
-# close console output when operate is run or test.
+# close console output when the operate is run or test.
 if { $config(operate) == "run" || $config(operate) == "test" } {
     log_user 0
 }
@@ -92,12 +93,12 @@ if { [info exists config(shadow)] && [file exists $config(shadow)] } {
     array set password []
 }
 
-# 打开待执行命令列表的文件句柄
+# open the script file if the operate is run. 
 if { $config(operate) == "run" } { 
     set file [open $config(script) r]
 } 
 
-# 根据用户传递参数设定ssh命令
+# according user input script parameter set ssh command opts. 
 set COMMAND "ssh -o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no"
 foreach {key value} [array get config] {
     if {$key == "user"} { 
