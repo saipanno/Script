@@ -16,6 +16,7 @@ noremap l <C-n>
 
 let mapleader = ","
 noremap <leader>bd :tabopen www.baidu.com<cr>
+noremap <leader>lx :tabopen cloud.vip.xunlei.com<cr>
 noremap <leader>gg :tabopen www.google.com/ncr<cr>
 noremap <leader>gh :tabopen github.com/saipanno<cr>
 noremap <leader>sp :tabopen saipanno.com<cr>
@@ -23,6 +24,10 @@ noremap <leader>gm :tabopen www.gmail.com<cr>
 noremap <leader>vx :tabopen www.v2ex.com<cr>
 noremap <leader>wb :tabopen weibo.com<cr>
 noremap <leader>zh :tabopen www.zhihu.com<cr>
+noremap <leader>oa :tabopen oabt.org<cr>
+noremap <leader>tm :tabopen tm.sdo.com<cr>
+noremap <leader>zc :tabopen 10.176.0.134/asset<cr>
+noremap <leader>mm :tabopen 122.11.32.18:8080/ConfigManage/HTML/<cr>
 
 noremap y Y
 noremap Y y
