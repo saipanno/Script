@@ -10,10 +10,10 @@
 #    Created by Ruoyan Wong on 2012/11/04.
 
 import os
-import sys
 import time
 import socket
 import subprocess
+from argparse import ArgumentParser
 from multiprocessing import Pool, Manager
 
 
@@ -49,50 +49,47 @@ def socket_checking(address, port, result, TIMEOUT):
 
 if __name__ == '__main__':
 
-    COUNT = 5
-    TIMEOUT = 2
-    MAX_PROCESSES = 250
-    LOG_DIRECTORY = '%s/logging' % os.environ['HOME']
+    HOME = os.environ['HOME']
 
-    try:
-        item   = sys.argv[1]
-        target = sys.argv[2]
-    except Exception:
-        print "Usage:\n    python multichecking.py socket|ping host-address.txt"
-        sys.exit(1)
+    parser = ArgumentParser()
+    parser.add_argument('target',   help='server address file')
+    parser.add_argument('-o', dest='operate',  help='operate type, (support: ping, socket)', required=True)
+    parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
+    parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-t', dest='timeout',  help='build-in timeout, (default: %(default)s)', default=45)
+    config = vars(parser.parse_args())
 
-    sub_log_directory = '%s/%s' % (LOG_DIRECTORY, time.strftime("%Y%m%d%H%M"))
-    running_command('mkdir -p %s' % sub_log_directory)
-    running_command('mv -f %s/*.ssh %s' % (LOG_DIRECTORY, sub_log_directory))
-    running_command('mv -f %s/*.txt %s' % (LOG_DIRECTORY, sub_log_directory))
-    running_command('mv -f %s/*.ping %s' % (LOG_DIRECTORY, sub_log_directory))
+    subdirectories = '%s/%s' % (config['logdir'], time.strftime("%Y%m%d%H%M"))
+    running_command('mkdir -p %s' % subdirectories)
+    running_command('mv -f %s/*.txt %s' % (config['logdir'], subdirectories))
+    running_command('mv -f %s/*.stat %s' % (config['logdir'], subdirectories))
 
     manager = Manager()
     kitten = manager.dict()
 
-    file = open(target)
+    file = open(config['target'])
     tasks = list()
     for oneline in file:
         oneline = oneline.rsplit()[0]
         tasks.append(oneline.split(','))
     file.close()
 
-    pool = Pool(processes=MAX_PROCESSES)
+    pool = Pool(processes=config['procs'])
 
     jobs = list()
-    if item == 'ping':
+    if config['operate'] == 'ping':
         for task in tasks:
             # task = [address]
-            pool.apply_async(connectivity_checking, (task[0], kitten, COUNT, TIMEOUT))
-    elif item == 'socket':
+            pool.apply_async(connectivity_checking, (task[0], kitten, 5, config['timeout']))
+    elif config['operate'] == 'socket':
         for task in tasks:
             # task = [address, port]
-            pool.apply_async(socket_checking, (task[0], int(task[1]), kitten, TIMEOUT))
+            pool.apply_async(socket_checking, (task[0], int(task[1]), kitten, config['timeout']))
 
     pool.close()
     pool.join()
 
-    result_log_file = '%s/checking.txt' % LOG_DIRECTORY 
+    result_log_file = '%s/checking.txt' % config['logdir'] 
     file = open(result_log_file, 'w')
     for address in kitten.keys():
         file.write('%s : %s\n' % (address, kitten[address]))
