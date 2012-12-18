@@ -9,51 +9,23 @@
 #
 #    Created by Ruoyan Wong on 2012/11/06.
 
-import os
-import re
 import sys
-import time
 import subprocess
-from multiprocessing import Process
+from re import search
+from os import environ
 from argparse import ArgumentParser
-
-def get_expect_script_output(logdir):
-
-    subprocess.call('rm -f %s/interact.stat' % logdir, shell=True)
-    while True:
-        try:
-            file = open('%s/interact.stat' % logdir)
-            print file.readline().strip()
-            file.close()
-            break
-        except:
-            time.sleep(0.5)
-            continue
-
-def start_expect_script(COMMAND):
-    try:
-        subprocess.call('%s' % COMMAND, stderr=subprocess.STDOUT, shell=True)
-    except:
-        pass
 
 if __name__ == '__main__':
 
-    HOME = os.environ['HOME']
+    HOME = environ['HOME']
     AUTO_EXPECT = '%s/bin/auto_login.expect' % HOME
 
     opts = dict()
-    if re.search('ssh.ku', sys.argv[0]) is not None:
+    if search('ssh.ku', sys.argv[0]) is not None:
         opts['port'] = 22
         opts['user'] = 'root'
         opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
         opts['shadow'] = '%s/.ssh/password.ku' % HOME
-        opts['logdir'] = '%s/logging' % HOME
-    elif re.search('ssh.hc', sys.argv[0]) is not None:
-        opts['port'] = 7035
-        opts['user'] = 'root'
-        opts['adderss'] = '106.187.89.40'
-        opts['secret'] = '%s/.ssh/id_rsa' % HOME
-        opts['shadow'] = '%s/.ssh/password' % HOME
         opts['logdir'] = '%s/logging' % HOME
 
     parser = ArgumentParser() 
@@ -86,11 +58,4 @@ if __name__ == '__main__':
         elif key == 'timeout':
             COMMAND = '%s t %s' % (COMMAND, value)
 
-    print COMMAND
-
-    workers = list()
-    workers.append(Process(target=start_expect_script, args=(COMMAND, )))
-    workers.append(Process(target=get_expect_script_output, args=(opts['logdir'], )))
-
-    for worker in workers: worker.start()
-    for worker in workers: worker.join()
+    subprocess.call('%s' % COMMAND, shell=True)

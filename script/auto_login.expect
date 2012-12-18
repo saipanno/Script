@@ -7,6 +7,9 @@
 #    Created by Ruoyan Wong on 2012/12/10.
 
 
+# silly globals
+set PROMPT "(%|>|#|\\\$) $"
+
 # 解析参数,存入数组中.
 for {set x 0} {$x<$argc} {incr x 2} {
     set opt [lindex $argv $x]
@@ -66,10 +69,10 @@ if { $argc==1 && [lindex $argv 0]=="help" } {
     exit
 }
 
-
-# silly globals
-log_user 0
-set PROMPT "(%|>|#|\\\$) $"
+# close console output when operate is run or test.
+if { $config(operate) == "run" || $config(operate) == "test" } {
+    log_user 0
+}
 
 # define expect build-in timeout
 if { [info exists config(time)] } {
@@ -130,9 +133,7 @@ expect {
                 set file [open $config(logdir)/$status.stat a]
                 puts $file "$config(address)"
             } elseif { $config(operate) == "interact" } {
-                set file [open $config(logdir)/interact.stat w]
-                #puts $file "Authentication failed!"
-                puts stderr "Authentication failed!"
+                puts "Authentication failed!\n"
             }
             close $file
             exit
@@ -163,10 +164,6 @@ expect {
         } elseif { $config(operate) == "test" }  {
             send -- "exit\n"
         } elseif { $config(operate) == "interact" } {
-            set file [open $config(logdir)/interact.stat w]
-            #puts $file "Node login success!"
-            puts stderr "Node login success!"
-            #close $file
             interact
             exit
         } 
@@ -177,14 +174,14 @@ expect {
         if { $config(operate) == "run" } {
             set file [open $config(logdir)/$config(address).txt a]
             puts $file $status
+            close $file
         } elseif { $config(operate) == "test" }  {
             set file [open $config(logdir)/$status.stat a]
             puts $file "$config(address)"
+            close $file
         } elseif { $config(operate) == "interact" }  {
-            set file [open $config(logdir)/interact.stat w]
-            puts $file "Trigger expect timeout"
+            puts "Trigger expect timeout"
         }
-        close $file
         exit
     }
 }
@@ -202,9 +199,7 @@ expect eof {
         set file [open $config(logdir)/$status.stat a]
         puts $file "$config(address)"
     } elseif { $config(operate) == "interact" }  {
-        set file [open $config(logdir)/interact.stat w]
-        puts $file "Trigger exception: $status"
-        close $file
+        puts "Trigger exception: $status"
     }
     if { [info exists file1] } { close $file }
     exit
