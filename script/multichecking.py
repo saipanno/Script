@@ -56,7 +56,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', dest='operate',  help='operate type, (support: ping, socket)', required=True)
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
-    parser.add_argument('-t', dest='timeout',  help='build-in timeout, (default: %(default)s)', default=45)
+    parser.add_argument('-t', dest='timeout',  help='build-in timeout, (default: %(default)s)', default=10)
     config = vars(parser.parse_args())
 
     subdirectories = '%s/%s' % (config['logdir'], time.strftime("%Y%m%d%H%M"))
