@@ -113,13 +113,13 @@ set count 0
 # 使用{*}关闭spawn的参数异常情况
 spawn {*}$COMMAND $config(address)
 expect {
-    # 匹配到"Permission denied"关键字自动将密码跳转到下一条记录，主要目的为可自动尝试多个密码。
+    # If match keyword "Permission denied", jump to the next password.
     "Permission denied" {
         incr count
         exp_continue
     }
+    # Send current password. Quit if there is no record.
     "*?assword:*" {
-    # 从密码数组中获取当前密码，当密码不存在时表示密码尝试失败，退出。
         if [info exists password($count)] {
             send "$password($count)\r"
             exp_continue
@@ -156,6 +156,7 @@ expect {
     }
     -re "$PROMPT" {
         set status "success" 
+        # yeah! Do whatever you want to do.
         if { $config(operate) == "run" } {
             while { [ gets $file CMD ]>=0 } { 
                 send -- "$CMD\n"
