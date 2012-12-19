@@ -23,3 +23,8 @@ Host kr
     IdentityFile ~/.ssh/id_rsa
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
+Host nkr
+    User wangruoyan
+    HostName 211.147.13.166 
+    VerifyHostKeyDNS no
+    GSSAPIAuthentication no
