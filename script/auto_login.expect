@@ -111,8 +111,7 @@ foreach {key value} [array get config] {
 }
 
 set count 0
-# 使用{*}关闭spawn的参数异常情况
-spawn {*}$COMMAND $config(address)
+eval spawn $COMMAND $config(address)
 expect {
     # If match keyword "Permission denied", jump to the next password.
     "Permission denied" {
