@@ -74,7 +74,7 @@ if __name__ == '__main__':
             COMMAND = '%s c %s' % (COMMAND, value)
 
     for host in hosts:
-        pool.apply_async(running_command, ('%s a %s' % (COMMAND, host)))
+        pool.apply_async(running_command, ('%s a %s' % (COMMAND, host), ))
 
     pool.close()
     pool.join()
