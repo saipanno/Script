@@ -118,6 +118,21 @@ expect {
         incr count
         exp_continue
     }
+    # If match keyword "Permission denied (publickey,gssapi-with-mic,password).", quit with authentication failed status.
+    "Permission denied (*)" {
+        set status "nopasswd"
+        if { $config(operate) == "run" } {
+            set file [open $config(logdir)/$config(address).txt a]
+            puts $file $status
+        } elseif { $config(operate) == "test" } {
+            set file [open $config(logdir)/$status.stat a]
+            puts $file "$config(address)"
+        } elseif { $config(operate) == "interact" } {
+            puts "Authentication failed!\n"
+        }
+        if { [info exists file1] } { close $file }
+        exit
+    }
     # Send current password. Quit if there is no record.
     "*?assword:*" {
         if [info exists password($count)] {
@@ -135,7 +150,7 @@ expect {
             } elseif { $config(operate) == "interact" } {
                 puts "Authentication failed!\n"
             }
-            close $file
+            if { [info exists file1] } { close $file }
             exit
         }
     }
@@ -175,14 +190,13 @@ expect {
         if { $config(operate) == "run" } {
             set file [open $config(logdir)/$config(address).txt a]
             puts $file $status
-            close $file
         } elseif { $config(operate) == "test" }  {
             set file [open $config(logdir)/$status.stat a]
             puts $file "$config(address)"
-            close $file
         } elseif { $config(operate) == "interact" }  {
             puts "Trigger expect timeout"
         }
+        if { [info exists file1] } { close $file }
         exit
     }
 }
