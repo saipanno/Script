@@ -28,3 +28,5 @@ Host nkr
     HostName 211.147.13.166 
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
+    ControlMaster auto
+    ControlPath /tmp/ssh-%r@%h
