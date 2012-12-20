@@ -113,11 +113,6 @@ foreach {key value} [array get config] {
 set count 0
 eval spawn $COMMAND $config(address)
 expect {
-    # If match keyword "Permission denied", jump to the next password.
-    "Permission denied" {
-        incr count
-        exp_continue
-    }
     # If match keyword "Permission denied (publickey,gssapi-with-mic,password).", quit with authentication failed status.
     "Permission denied (*)" {
         set status "nopasswd"
@@ -132,6 +127,11 @@ expect {
         }
         if { [info exists file1] } { close $file }
         exit
+    }
+    # If match keyword "Permission denied", jump to the next password.
+    "Permission denied" {
+        incr count
+        exp_continue
     }
     # Send current password. Quit if there is no record.
     "*?assword:*" {
