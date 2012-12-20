@@ -118,7 +118,7 @@ expect {
         set status "nopasswd"
         if { $config(operate) == "run" || $config(operate) == "test" } {
             set file [open $config(logdir)/$status.txt a]
-            puts $file $$config(address)
+            puts $file "$config(address)"
             close $file
         } elseif { $config(operate) == "interact" } {
             puts "Authentication failed!\n"
@@ -140,7 +140,7 @@ expect {
             set status "nopasswd"
             if { $config(operate) == "run" || $config(operate) == "test" } {
                 set file [open $config(logdir)/$status.txt a]
-                puts $file $$config(address)
+                puts $file "$config(address)"
                 close $file
             } elseif { $config(operate) == "interact" } {
                 puts "Authentication failed!\n"
@@ -183,7 +183,7 @@ expect {
         # haha! Match expect build-in timeout.
         if { $config(operate) == "run" || $config(operate) == "test" } {
             set file [open $config(logdir)/$status.txt a]
-            puts $file $$config(address)
+            puts $file "$config(address)"
             close $file
         } elseif { $config(operate) == "interact" }  {
             puts "Trigger expect timeout"
@@ -200,7 +200,7 @@ expect eof {
             puts $file "$expect_out(buffer)"
         } else {
             set file [open $config(logdir)/$status.txt a]
-            puts $file $$config(address)
+            puts $file "$config(address)"
         }
     } elseif { $config(operate) == "test" }  {
         set file [open $config(logdir)/$status.stat a]
