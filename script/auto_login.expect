@@ -116,16 +116,13 @@ expect {
     # If match keyword "Permission denied (publickey,gssapi-with-mic,password).", quit with authentication failed status.
     "Permission denied (*)" {
         set status "nopasswd"
-        if { $config(operate) == "run" } {
-            set file [open $config(logdir)/$config(address).txt a]
-            puts $file $status
-        } elseif { $config(operate) == "test" } {
-            set file [open $config(logdir)/$status.stat a]
-            puts $file "$config(address)"
+        if { $config(operate) == "run" || $config(operate) == "test" } {
+            set file [open $config(logdir)/$status.txt a]
+            puts $file $$config(address)
+            close $file
         } elseif { $config(operate) == "interact" } {
             puts "Authentication failed!\n"
         }
-        if { [info exists file1] } { close $file }
         exit
     }
     # If match keyword "Permission denied", jump to the next password.
@@ -141,16 +138,13 @@ expect {
         } else {
             # fuck! Match authentication failed!
             set status "nopasswd"
-            if { $config(operate) == "run" } {
-                set file [open $config(logdir)/$config(address).txt a]
-                puts $file $status
-            } elseif { $config(operate) == "test" } {
-                set file [open $config(logdir)/$status.stat a]
-                puts $file "$config(address)"
+            if { $config(operate) == "run" || $config(operate) == "test" } {
+                set file [open $config(logdir)/$status.txt a]
+                puts $file $$config(address)
+                close $file
             } elseif { $config(operate) == "interact" } {
                 puts "Authentication failed!\n"
             }
-            if { [info exists file1] } { close $file }
             exit
         }
     }
@@ -187,16 +181,13 @@ expect {
     timeout {
         set status "timeout"
         # haha! Match expect build-in timeout.
-        if { $config(operate) == "run" } {
-            set file [open $config(logdir)/$config(address).txt a]
-            puts $file $status
-        } elseif { $config(operate) == "test" }  {
-            set file [open $config(logdir)/$status.stat a]
-            puts $file "$config(address)"
+        if { $config(operate) == "run" || $config(operate) == "test" } {
+            set file [open $config(logdir)/$status.txt a]
+            puts $file $$config(address)
+            close $file
         } elseif { $config(operate) == "interact" }  {
             puts "Trigger expect timeout"
         }
-        if { [info exists file1] } { close $file }
         exit
     }
 }
@@ -204,11 +195,12 @@ expect {
 # ha! Match all nomal expect eof.
 expect eof {
     if { $config(operate) == "run" } {
-        set file [open $config(logdir)/$config(address).txt a]
         if { $status == "success" } {
+            set file [open $config(logdir)/$config(address).txt a]
             puts $file "$expect_out(buffer)"
         } else {
-            puts $file $status
+            set file [open $config(logdir)/$status.txt a]
+            puts $file $$config(address)
         }
     } elseif { $config(operate) == "test" }  {
         set file [open $config(logdir)/$status.stat a]
