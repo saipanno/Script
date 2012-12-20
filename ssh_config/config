@@ -30,3 +30,5 @@ Host nkr
     GSSAPIAuthentication no
     ControlMaster auto
     ControlPath /tmp/ssh-%r@%h
+Host github.com
+    IdentityFile ~/.ssh/github_rsa
