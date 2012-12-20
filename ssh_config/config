@@ -1,26 +1,26 @@
 Host db
     User root
     HostName 122.11.45.8
-    IdentityFile ~/.ssh/id_rsa.ku
+    IdentityFile ~/.ssh/ku_rsa
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
 Host ts
     User root
     HostName 122.11.45.123
-    IdentityFile ~/.ssh/id_rsa.ku
+    IdentityFile ~/.ssh/ku_rsa
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
 Host hc
     User root
     Port 7035
     HostName 106.187.89.40
-    IdentityFile ~/.ssh/id_rsa.saipanno
+    IdentityFile ~/.ssh/saipanno_rsa
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
 Host kr
     User sndawangruoyan
     HostName 122.11.32.36 
-    IdentityFile ~/.ssh/id_rsa.saipanno
+    IdentityFile ~/.ssh/saipanno_rsa
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
 Host nkr
@@ -31,4 +31,4 @@ Host nkr
     ControlMaster auto
     ControlPath /tmp/ssh-%r@%h
 Host github.com
-    IdentityFile ~/.ssh/id_rsa.saipanno
+    IdentityFile ~/.ssh/saipanno_rsa

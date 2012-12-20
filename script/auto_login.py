@@ -24,8 +24,8 @@ if __name__ == '__main__':
     if search('ssh.ku', sys.argv[0]) is not None:
         opts['port'] = 22
         opts['user'] = 'root'
-        opts['secret'] = '%s/.ssh/id_rsa.ku' % HOME
-        opts['shadow'] = '%s/.ssh/password.ku' % HOME
+        opts['secret'] = '%s/.ssh/ku_rsa' % HOME
+        opts['shadow'] = '%s/.ssh/ku_password' % HOME
         opts['logdir'] = '%s/logging' % HOME
 
     parser = ArgumentParser() 
