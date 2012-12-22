@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('target',   help='server address file')
-    parser.add_argument('-o', dest='operate',  help='operate type, (support: ping, socket)', required=True)
+    parser.add_argument('-o', dest='operate',  help='operate type.', choices=['ping', 'socket'], required=True)
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',  help='build-in timeout, (default: %(default)s)', default=10)

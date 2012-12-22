@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('target',   help='server address file')
-    parser.add_argument('-o', dest='operate',  help='operate type, (support: run, test)', required=True)
+    parser.add_argument('-o', dest='operate',  help='operate type', choices=['run', 'test'], required=True)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
