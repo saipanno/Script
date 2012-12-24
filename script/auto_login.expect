@@ -18,7 +18,7 @@ for {set x 0} {$x<$argc} {incr x 2} {
     switch -glob $opt {
         "u" { set config(user)    [lindex $argv $nexts] }
         "p" { set config(port)    [lindex $argv $nexts] }
-        "c" { set config(script)  [lindex $argv $nexts] }
+        "f" { set config(script)  [lindex $argv $nexts] }
         "i" { set config(secret)  [lindex $argv $nexts] }
         "s" { set config(shadow)  [lindex $argv $nexts] }
         "a" { set config(address) [lindex $argv $nexts] }
