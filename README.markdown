@@ -4,7 +4,7 @@ Profile.d
 此项目包含常用命令行工具的配置文件以及日常使用的脚本.
 
 
-### 一 初始化
+### 一、初始化
 使用如下命令进行工作环境初始化:
 
 	cd ~
@@ -21,7 +21,7 @@ Profile.d
 	ln ~/Projects/Profile.d/ssh_config/config config
 	ln ~/Projects/Profile.d/ssh_config/authorized_keys authorized_keys
 	
-### 二 说明文档
+### 二、说明文档
 
 
 ##### 2.1 脚本说明
