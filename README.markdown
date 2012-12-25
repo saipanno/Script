@@ -71,9 +71,21 @@ SSH交互脚本,基于auto_login.expect
       -f SCRIPT      远程执行的脚本或脚本模板
       -v VARIABLE    用于模板生成的变量文件
 
-注:下面为-f参数指定变量文件的格式.
+脚本模板以及变量文件的格式
 
-用`|`作为key和value的分隔符,用`,`作为多个变量赋值的分隔符,用`=`作为变量赋值的分隔符
+**脚本模板**: 用`{`和`}`作为外部变量的定界符,模板中的`{var}`会自动按照变量文件中的定义进行替换.同时模板依然支持shell中的`$`变量
+
+    device=`ifconfig | awk '/^eth|^em/ { print $1 }' | head -n1`
+    mac=`ifconfig $device | grep HWaddr | awk '{ print $5 }'`
+    echo "DEVICE=$device"    > /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "TYPE=Ethernet"     >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "BOOTPROTO=static"  >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "HWADDR=$mac"       >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "IPADDR={address}"  >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "NETMASK={netmask}" >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "GATEWAY={gateway}" >> /etc/sysconfig/network-scripts/ifcfg-$device
+    echo "ONBOOT=yes"        >> /etc/sysconfig/network-scripts/ifcfg-$device
+**变量文件**: 用`|`作为key和value的分隔符,用`,`作为多个变量赋值的分隔符,用`=`作为变量赋值的分隔符
 
     60.175.193.194|address=61.132.226.195,gateway=61.132.226.254,netmask=255.255.255.192
 ###### multichecking.py
