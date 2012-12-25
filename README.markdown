@@ -87,3 +87,10 @@ SSH交互脚本,基于auto_login.expect
       -d LOGDIR         日志目录,默认为: ~/logging
       -b PROCS          并发数量,默认为: 250
       -t TIMEOUT        程序内建超时,默认为: 10
+      
+##### 2.2 配置文件说明
+###### vimrc
+###### zshrc
+###### bashrc
+###### tmux.conf
+###### vimperatorrc
