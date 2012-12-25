@@ -36,13 +36,12 @@ required arguments:
     o  OPERATE operate type, (support: run, test, interact)
     a  ADDRESS server address
     d  LOGDIR  syslog directory
-optional arguments:
     u  USER    user
     p  PORT    port
-    c  SCRIPT  execute command file
+    f  SCRIPT  script file 
     i  SECRET  user identity file
     s  SHADOW  password file
-    t  TIMEOUT expect build-in timeouts"
+    t  TIMEOUT expect build-in timeout"
 
 # check the command-line script arguments.
 if { $argc==1 && [lindex $argv 0]=="help" } {
