@@ -57,6 +57,9 @@ if v:version < 700
     finish
 endif
 
+if !exists('g:pydiction_status') || g:pydiction_status != "enable"
+    finish
+endif
 
 " Make the Tab key do python code completion:
 inoremap <silent> <buffer> <Tab> 
