@@ -53,14 +53,14 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('target', help='hostname or address file')
-    parser.add_argument('-o', dest='operate',  help='operate type', choices=['run', 'test'], required=True)
-    parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
-    parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
-    parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
-    parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/ku_rsa' % HOME)
-    parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/ku_password' % HOME)
-    parser.add_argument('-r', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
-    parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
+    parser.add_argument('-o', dest='operate', help='operate type', choices=['run', 'test'], required=True)
+    parser.add_argument('-u', dest='user',    help='user, (default: %(default)s)', default='root')
+    parser.add_argument('-p', dest='port',    help='port, (default: %(default)s)', default=22)
+    parser.add_argument('-d', dest='logdir',  help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
+    parser.add_argument('-i', dest='secret',  help='user identity file, (default: %(default)s)', default='%s/.ssh/ku_rsa' % HOME)
+    parser.add_argument('-s', dest='shadow',  help='password file, (default: %(default)s)', default='%s/.ssh/ku_password' % HOME)
+    parser.add_argument('-r', dest='procs',   help='process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-t', dest='timeout', help='expect build-in timeout, (default: %(default)s)', default=45)
     script_run_group = parser.add_argument_group('OPTION: -o run')
     script_run_group.add_argument('-f', dest='script', help='script or template script file')
     script_run_group.add_argument('-v', dest='variable', help='variable for template file')
@@ -80,7 +80,6 @@ if __name__ == '__main__':
     pool = Pool(processes=config['procs'])
 
     COMMAND = 'expect %s' % AUTO_EXPECT
-
     for key,value in config.items():
         if key == 'operate' and value is not None:
             COMMAND = '%s o %s' % (COMMAND, value)
@@ -97,7 +96,6 @@ if __name__ == '__main__':
         elif key == 'timeout' and value is not None:
             COMMAND = '%s t %s' % (COMMAND, value)
    
-        
     detail_dict = dict()
     if config['variable'] is not None and os.path.isfile(config['variable']):
         try:
@@ -118,7 +116,6 @@ if __name__ == '__main__':
     for host in hosts:
         script = create_script_from_template(config['script'], detail_dict.get('host', dict()))
         pool.apply_async(running_command, ('%s f %s a %s' % (COMMAND, script, host), ))
-
 
     pool.close()
     pool.join()
