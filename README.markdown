@@ -44,6 +44,7 @@ Profile.d
 
 ###### multiexpect.py
 SSH交互脚本,基于auto_login.expect
+
 支持登录测试.执行命令以及从模板执行命令.
 
     $ python multiexpect.py -h
