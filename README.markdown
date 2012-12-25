@@ -69,7 +69,13 @@ SSH交互脚本,基于auto_login.expect
 
     run操作必须参数:
       -f SCRIPT      远程执行的脚本或脚本模板
-      -v VARIABLE    用于模板生成的变量
+      -v VARIABLE    用于模板生成的变量文件
+
+注:下面为-f参数指定变量文件的格式.
+
+用`|`为key和value的分隔符,用`,`多个变量赋值的分隔符,用`=`作为变量赋值的分隔符
+
+    60.175.193.194|address=61.132.226.195,gateway=61.132.226.254,netmask=255.255.255.192
 ###### multichecking.py
 联通性测试脚本,支持socket测试以及ping测试.
 
