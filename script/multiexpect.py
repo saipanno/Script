@@ -104,7 +104,6 @@ if __name__ == '__main__':
 
     elif config['operate'] == 'template_run':
 
-        # address|{"newip": "8.8.4.4", "ip": "8.8.8.8", "netmask": "255.255.255.0"}
         detail_dict = dict()
         try:
             file = open(config['detail'])
