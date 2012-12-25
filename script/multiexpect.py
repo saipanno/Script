@@ -49,7 +49,7 @@ if __name__ == '__main__':
     AUTO_EXPECT = '%s/bin/auto_login.expect' % HOME
 
     parser = ArgumentParser()
-    parser.add_argument('target', help='server address file')
+    parser.add_argument('target', help='hostname or address file')
     parser.add_argument('-o', dest='operate',  help='operate type', choices=['run', 'test', 'template_run'], required=True)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
@@ -58,11 +58,11 @@ if __name__ == '__main__':
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/ku_password' % HOME)
     parser.add_argument('-r', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
-    script_run_group = parser.add_argument_group('OPERATE: -o run')
-    script_run_group.add_argument('-f', dest='script', help='script')
-    template_run_group = parser.add_argument_group('OPERATE: -o template_run')
-    template_run_group.add_argument('-e', dest='template', help='script template file, required')
-    template_run_group.add_argument('-v', dest='variable', help='variable for template file, required')
+    script_run_group = parser.add_argument_group('required if -o run is set')
+    script_run_group.add_argument('-f', dest='script', help='script file')
+    template_run_group = parser.add_argument_group('required if -o template_run is set')
+    template_run_group.add_argument('-e', dest='template', help='script template file')
+    template_run_group.add_argument('-v', dest='variable', help='variable for template file')
     config = vars(parser.parse_args())
 
     subdirectories = '%s/%s' % (config['logdir'], strftime("%Y%m%d%H%M"))
