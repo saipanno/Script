@@ -9,9 +9,8 @@
 #
 #    Created by Ruoyan Wong on 2012/11/06.
 
-import os
-import re
 import sys
+import os, re
 import tempfile
 import subprocess
 from time import strftime
@@ -22,15 +21,17 @@ def running_command(command):
     try:
         subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
     except Exception:
-        pass
+        print 'exec error:\n\t%s' % command
 
-def create_script_from_template(template, detail_dict):
+def create_script_from_template(template, info):
+
     command_list = list()
     s, script = tempfile.mkstemp() 
 
+    # create script from template.
     fd_template = open(template, 'r')
     for oneline in fd_template:
-        for key,value in detail_dict.items():
+        for key,value in info.items():
             oneline = re.sub('{%s}' % key, value, oneline)
         command_list.append(oneline.strip())
     fd_template.close()
@@ -55,13 +56,13 @@ if __name__ == '__main__':
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
     parser.add_argument('-i', dest='secret',   help='user identity file, (default: %(default)s)', default='%s/.ssh/ku_rsa' % HOME)
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/ku_password' % HOME)
-    parser.add_argument('-b', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-r', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
     script_run_group = parser.add_argument_group('OPERATE: -o run')
-    script_run_group.add_argument('-f', dest='script', help='script file, required')
+    script_run_group.add_argument('-f', dest='script', help='script')
     template_run_group = parser.add_argument_group('OPERATE: -o template_run')
-    template_run_group.add_argument('-m', dest='template', help='script template file, required')
-    template_run_group.add_argument('-v', dest='detail', help='script template file var detail, required')
+    template_run_group.add_argument('-e', dest='template', help='script template file, required')
+    template_run_group.add_argument('-v', dest='variable', help='variable for template file, required')
     config = vars(parser.parse_args())
 
     subdirectories = '%s/%s' % (config['logdir'], strftime("%Y%m%d%H%M"))
@@ -106,7 +107,7 @@ if __name__ == '__main__':
 
         detail_dict = dict()
         try:
-            file = open(config['detail'])
+            file = open(config['variable'])
             for oneline in file:
                 detail_address = oneline.split("|")[0]
                 detail_information = oneline.split("|")[1]
@@ -117,7 +118,7 @@ if __name__ == '__main__':
                     detail_dict[detail_address][key] = value
             file.close()
         except Exception, e:
-            print 'Detail infomation file format error: %s' % e
+            print 'variable for template file format error: %s' % e
             sys.exit(1)
 
         for host in hosts:
