@@ -29,7 +29,7 @@ if __name__ == '__main__':
         opts['logdir'] = '%s/logging' % HOME
 
     parser = ArgumentParser() 
-    parser.add_argument('address', help='server address')
+    parser.add_argument('address', help='hostname or address')
     parser.add_argument('-u', dest='user',     help='user')
     parser.add_argument('-p', dest='port',     help='port')
     parser.add_argument('-i', dest='secret',   help='user identity file')
