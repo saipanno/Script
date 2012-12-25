@@ -25,21 +25,24 @@ def running_command(command):
 
 def create_script_from_template(template, info):
 
-    command_list = list()
-    s, script = tempfile.mkstemp() 
+    if len(info) == 0:
+        script = template
+    elif len(info) > 0:
+        command_list = list()
+        s, script = tempfile.mkstemp() 
 
-    # create script from template.
-    fd_template = open(template, 'r')
-    for oneline in fd_template:
-        for key,value in info.items():
-            oneline = re.sub('{%s}' % key, value, oneline)
-        command_list.append(oneline.strip())
-    fd_template.close()
+        # create script from template.
+        fd_template = open(template, 'r')
+        for oneline in fd_template:
+            for key,value in info.items():
+                oneline = re.sub('{%s}' % key, value, oneline)
+            command_list.append(oneline.strip())        
+        fd_template.close()
     
-    fd_script = open(script, 'w')
-    for command in command_list:
-        fd_script.write('%s\n' % command)
-    fd_script.close()
+        fd_script = open(script, 'w')
+        for command in command_list:
+            fd_script.write('%s\n' % command)
+        fd_script.close()
 
     return script 
 
@@ -50,7 +53,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('target', help='hostname or address file')
-    parser.add_argument('-o', dest='operate',  help='operate type', choices=['run', 'test', 'template_run'], required=True)
+    parser.add_argument('-o', dest='operate',  help='operate type', choices=['run', 'test'], required=True)
     parser.add_argument('-u', dest='user',     help='user, (default: %(default)s)', default='root')
     parser.add_argument('-p', dest='port',     help='port, (default: %(default)s)', default=22)
     parser.add_argument('-d', dest='logdir',   help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
@@ -58,11 +61,9 @@ if __name__ == '__main__':
     parser.add_argument('-s', dest='shadow',   help='password file, (default: %(default)s)', default='%s/.ssh/ku_password' % HOME)
     parser.add_argument('-r', dest='procs',    help='process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',  help='expect build-in timeout, (default: %(default)s)', default=45)
-    script_run_group = parser.add_argument_group('required if -o run is set')
-    script_run_group.add_argument('-f', dest='script', help='script file')
-    template_run_group = parser.add_argument_group('required if -o template_run is set')
-    template_run_group.add_argument('-e', dest='template', help='script template file')
-    template_run_group.add_argument('-v', dest='variable', help='variable for template file')
+    script_run_group = parser.add_argument_group('OPTION: -o run')
+    script_run_group.add_argument('-f', dest='script', help='script or template script file')
+    script_run_group.add_argument('-v', dest='variable', help='variable for template file')
     config = vars(parser.parse_args())
 
     subdirectories = '%s/%s' % (config['logdir'], strftime("%Y%m%d%H%M"))
@@ -80,32 +81,25 @@ if __name__ == '__main__':
 
     COMMAND = 'expect %s' % AUTO_EXPECT
 
-    if config['operate'] == 'run' or config['operate'] == 'test':
-
-        for key,value in config.items():
-            if key == 'operate' and value is not None:
-                COMMAND = '%s o %s' % (COMMAND, value)
-            elif key == 'user' and value is not None:
-                COMMAND = '%s u %s' % (COMMAND, value)
-            elif key == 'port' and value is not None:
-                COMMAND = '%s p %s' % (COMMAND, value)
-            elif key == 'secret' and value is not None:
-                COMMAND = '%s i %s' % (COMMAND, value)
-            elif key == 'shadow' and value is not None:
-                COMMAND = '%s s %s' % (COMMAND, value)
-            elif key == 'logdir' and value is not None:
-                COMMAND = '%s d %s' % (COMMAND, value)
-            elif key == 'timeout' and value is not None:
-                COMMAND = '%s t %s' % (COMMAND, value)
-            elif key == 'script' and value is not None:
-                COMMAND = '%s f %s' % (COMMAND, value)
-    
-        for host in hosts:
-            pool.apply_async(running_command, ('%s a %s' % (COMMAND, host), ))
-
-    elif config['operate'] == 'template_run':
-
-        detail_dict = dict()
+    for key,value in config.items():
+        if key == 'operate' and value is not None:
+            COMMAND = '%s o %s' % (COMMAND, value)
+        elif key == 'user' and value is not None:
+            COMMAND = '%s u %s' % (COMMAND, value)
+        elif key == 'port' and value is not None:
+            COMMAND = '%s p %s' % (COMMAND, value)
+        elif key == 'secret' and value is not None:
+            COMMAND = '%s i %s' % (COMMAND, value)
+        elif key == 'shadow' and value is not None:
+            COMMAND = '%s s %s' % (COMMAND, value)
+        elif key == 'logdir' and value is not None:
+            COMMAND = '%s d %s' % (COMMAND, value)
+        elif key == 'timeout' and value is not None:
+            COMMAND = '%s t %s' % (COMMAND, value)
+   
+        
+    detail_dict = dict()
+    if config['variable'] is not None and os.path.isfile(config['variable']):
         try:
             file = open(config['variable'])
             for oneline in file:
@@ -118,27 +112,13 @@ if __name__ == '__main__':
                     detail_dict[detail_address][key] = value
             file.close()
         except Exception, e:
-            print 'variable for template file format error: %s' % e
+            print 'get variable error: %s' % e
             sys.exit(1)
 
-        for host in hosts:
-            for key,value in config.items():
-                if key == 'operate' and value is not None:
-                    COMMAND = '%s o run' % (COMMAND)
-                elif key == 'user' and value is not None:
-                    COMMAND = '%s u %s' % (COMMAND, value)
-                elif key == 'port' and value is not None:
-                    COMMAND = '%s p %s' % (COMMAND, value)
-                elif key == 'secret' and value is not None:
-                    COMMAND = '%s i %s' % (COMMAND, value)
-                elif key == 'shadow' and value is not None:
-                    COMMAND = '%s s %s' % (COMMAND, value)
-                elif key == 'logdir' and value is not None:
-                    COMMAND = '%s d %s' % (COMMAND, value)
-                elif key == 'timeout' and value is not None:
-                    COMMAND = '%s t %s' % (COMMAND, value)
-            script = create_script_from_template(config['template'], detail_dict[host])
-            pool.apply_async(running_command, ('%s f %s a %s' % (COMMAND, script, host), ))
+    for host in hosts:
+        script = create_script_from_template(config['script'], detail_dict.get('host', dict()))
+        pool.apply_async(running_command, ('%s f %s a %s' % (COMMAND, script, host), ))
+
 
     pool.close()
     pool.join()
