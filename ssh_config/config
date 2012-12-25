@@ -25,10 +25,17 @@ Host kr
     GSSAPIAuthentication no
 Host nkr
     User wangruoyan
+    HostName 211.147.13.165 
+    VerifyHostKeyDNS no
+    GSSAPIAuthentication no
+    ControlMaster auto
+    ControlPath /tmp/211.147.13.165-%r@%h
+Host nkb
+    User wangruoyan
     HostName 211.147.13.166 
     VerifyHostKeyDNS no
     GSSAPIAuthentication no
     ControlMaster auto
-    ControlPath /tmp/ssh-%r@%h
+    ControlPath /tmp/211.147.13.166-%r@%h
 Host github.com
     IdentityFile ~/.ssh/saipanno_rsa
