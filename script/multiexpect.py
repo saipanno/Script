@@ -32,17 +32,15 @@ def create_script_from_template(template, info):
         s, script = tempfile.mkstemp() 
 
         # create script from template.
-        fd_template = open(template, 'r')
-        for oneline in fd_template:
-            for key,value in info.items():
-                oneline = re.sub('{%s}' % key, value, oneline)
-            command_list.append(oneline.strip())        
-        fd_template.close()
+        with open(template, 'r') as f:
+            for oneline in f:
+                for key,value in info.items():
+                    oneline = re.sub('{%s}' % key, value, oneline)
+                command_list.append(oneline.strip())        
     
-        fd_script = open(script, 'w')
-        for command in command_list:
-            fd_script.write('%s\n' % command)
-        fd_script.close()
+        with open(script, 'w') as f:
+            for command in command_list:
+                f.write('%s\n' % command)
 
     return script 
 
@@ -72,10 +70,9 @@ if __name__ == '__main__':
     running_command('mv -f %s/*.stat %s' % (config['logdir'], subdirectories))
 
     hosts = list()
-    file = open(config['target'])
+    with open(config['target']) as file:
     for oneline in file:
         hosts.append(oneline.rsplit()[0])
-    file.close()
 
     pool = Pool(processes=config['procs'])
 

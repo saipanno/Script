@@ -67,12 +67,11 @@ if __name__ == '__main__':
     manager = Manager()
     kitten = manager.dict()
 
-    file = open(config['target'])
     tasks = list()
-    for oneline in file:
-        oneline = oneline.rsplit()[0]
-        tasks.append(oneline.split(','))
-    file.close()
+    with open(config['target']) as f:
+        for oneline in f:
+            oneline = oneline.rsplit()[0]
+            tasks.append(oneline.split(','))
 
     pool = Pool(processes=config['procs'])
 
@@ -90,7 +89,6 @@ if __name__ == '__main__':
     pool.join()
 
     result_log_file = '%s/checking.txt' % config['logdir'] 
-    file = open(result_log_file, 'w')
+    with open(result_log_file, 'w') as f:
     for address in kitten.keys():
-        file.write('%s : %s\n' % (address, kitten[address]))
-    file.close()
+        f.write('%s : %s\n' % (address, kitten[address]))
