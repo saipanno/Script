@@ -1,30 +1,19 @@
-Profile.d
+Script
 ====
 
-此项目包含常用命令行工具的配置文件以及日常使用的脚本.
+此项目包含日常使用的脚本.
 
 
 ### 一、初始化
 使用如下命令进行工作环境初始化:
 
-	cd ~
-	ln -s Projects/Profile.d/script/ bin
-	ln -s Projects/Profile.d/bashrc/bash .bash
-	ln -s Projects/Profile.d/bashrc/bashrc .bashrc
-	ln -s Projects/Profile.d/bashrc/bash_profile .bash_profile
-	ln -s Projects/Profile.d/zshrc/zsh .zsh
-	ln -s Projects/Profile.d/zshrc/zshrc .zshrc
-	ln -s Projects/Profile.d/tmux.conf .tmux.conf
-	ln -s Projects/Profile.d/vimrc/vim .vim
-	
-	cd ~/.ssh
-	ln ~/Projects/Profile.d/ssh_config/config config
-	ln ~/Projects/Profile.d/ssh_config/authorized_keys authorized_keys
+	mkdir ~/bin && cd ~/bin
+	for file in `ls ~/Projects/Script/*`; do; script=`echo $file | awk -F"/" '{ print $NF }'`; ln -s $file $script; done
+
 	
 ### 二、说明文档
 
 
-##### 2.1 脚本说明
 ###### auto_login.expect
 联通性测试脚本,支持socket测试以及ping测试.
 
@@ -107,9 +96,3 @@ SSH交互脚本,基于auto_login.expect
       -b PROCS          并发数量,默认为: 250
       -t TIMEOUT        程序内建超时,默认为: 10
       
-##### 2.2 配置文件说明
-###### vimrc
-###### zshrc
-###### bashrc
-###### tmux.conf
-###### vimperatorrc
