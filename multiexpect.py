@@ -71,8 +71,8 @@ if __name__ == '__main__':
 
     hosts = list()
     with open(config['target']) as file:
-    for oneline in file:
-        hosts.append(oneline.rsplit()[0])
+        for oneline in file:
+            hosts.append(oneline.rsplit()[0])
 
     pool = Pool(processes=config['procs'])
 
