@@ -1,17 +1,26 @@
-trap cleanup HUB INT TERM
-function cleanup {
-    echo "oops~! start cleanup system"
-    for cmd in "${cleanup_cmds[@]}"; do
+#!/bin/bash 
+#
+#    initialize.sh,
+#
+#         CentOS system initialize script.
+#
+#    Created by Ruoyan Wong, at 2013年01月04日.
+
+
+trap rollback HUB INT TERM
+function rollback {
+    echo "oops~! start rollback system configure."
+    for cmd in "${rollback_cmds[@]}"; do
         eval $cmd
     done
 }
 
-mkdir -p /tmp/centos_initialize
+BAKUP="/tmp/config-`date +%Y%m%d%H%M`" && mkdir -p $BAKUP
 
 wget -O /tmp//ipcalc http://211.147.13.165/download/ipcalc
-cleanup_cmds+=("rm -f /tmp/ipcalc")
+rollback_cmds+=("rm -f /tmp/ipcalc")
 wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
-cleanup_cmds+=("rm -f /tmp/nameserver.txt")
+rollback_cmds+=("rm -f /tmp/nameserver.txt")
 
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
@@ -28,8 +37,8 @@ chmod 400 /root/.ssh/authorized_keys
 
 
 for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
-    cp /etc/sysconfig/network-scripts/ifcfg-$device $BAKUPDIR/ifcfg-$device
-    cleanup_cmds+=("cp -f /tmp/centos_initialize/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device")
+    cp /etc/sysconfig/network-scripts/ifcfg-$device $BAKUP/ifcfg-$device
+    rollback_cmds+=("cp -f $BAKUP/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device")
     ip=`/sbin/ifconfig $device | awk '/inet add/ { gsub("addr:", "", $2); print $2 }'`
     mac=`/sbin/ifconfig $device | awk '/HWaddr/ { print $5 }'`
     if [ -z "$ip" ];then
@@ -54,13 +63,11 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
-mv -f /etc/resolv.conf $BAKUPDIR/resolv.conf
-cleanup_cmds+=("cp -f $BAKUPDIR/resolv.conf /etc/resolv.conf")
+mv -f /etc/resolv.conf $BAKUP/resolv.conf
+rollback_cmds+=("cp -f $BAKUP/resolv.conf /etc/resolv.conf")
 cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
 SERVICES=(crond messagebus network sshd syslog rsyslog)
-cp -f /etc/inittab $BAKUPDIR/inittab
-cleanup_cmds+=("cp -f $BAKUPDIR/inittab /etc/inittab")
 sed -i 's/id:5:/id:3:/g' /etc/inittab
 for service in `/sbin/chkconfig --level 3 --list | awk '/:off/ { print $1 }'`; do
     /sbin/chkconfig --level 3 $service off
