@@ -1,6 +1,7 @@
 trap cleanup HUB INT TERM
 function cleanup {
-    for cmd in "${cleanup_commands[@]}"; do
+    echo "oops~! start cleanup system"
+    for cmd in "${cleanup_cmds[@]}"; do
         eval $cmd
     done
 }
@@ -8,14 +9,13 @@ function cleanup {
 mkdir -p /tmp/centos_initialize
 
 wget -O /tmp//ipcalc http://211.147.13.165/download/ipcalc
-cleanup_cmds+="rm -f /tmp/ipcalc"
+cleanup_cmds+=("rm -f /tmp/ipcalc")
 wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
-cleanup_cmds+="rm -f /tmp/nameserver.txt"
+cleanup_cmds+=("rm -f /tmp/nameserver.txt")
 
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/sysconfig/selinux
-
 
 for user in rd op cdnscan; do
     useradd $user
@@ -28,8 +28,8 @@ chmod 400 /root/.ssh/authorized_keys
 
 
 for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
-    cp /etc/sysconfig/network-scripts/ifcfg-$device /tmp/centos_initialize/ifcfg-$device
-    cleanup_cmds+="mv -f /tmp/centos_initialize/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device"
+    cp /etc/sysconfig/network-scripts/ifcfg-$device $BAKUPDIR/ifcfg-$device
+    cleanup_cmds+=("cp -f /tmp/centos_initialize/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device")
     ip=`/sbin/ifconfig $device | awk '/inet add/ { gsub("addr:", "", $2); print $2 }'`
     mac=`/sbin/ifconfig $device | awk '/HWaddr/ { print $5 }'`
     if [ -z "$ip" ];then
@@ -54,12 +54,13 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
-mv -f /etc/resolv.conf /tmp/centos_initialize/resolv.conf
-cleanup_cmds+="mv -f /tmp/centos_initialize/resolv.conf /etc/resolv.conf"
+mv -f /etc/resolv.conf $BAKUPDIR/resolv.conf
+cleanup_cmds+=("cp -f $BAKUPDIR/resolv.conf /etc/resolv.conf")
 cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
-
 SERVICES=(crond messagebus network sshd syslog rsyslog)
+cp -f /etc/inittab $BAKUPDIR/inittab
+cleanup_cmds+=("cp -f $BAKUPDIR/inittab /etc/inittab")
 sed -i 's/id:5:/id:3:/g' /etc/inittab
 for service in `/sbin/chkconfig --level 3 --list | awk '/:off/ { print $1 }'`; do
     /sbin/chkconfig --level 3 $service off
@@ -68,18 +69,14 @@ for service in ${SERVICES[@]}; do
     /sbin/chkconfig --level 3 $service on >> /dev/null
 done
 
-
 rm -f /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo 'ZONE="Asia/Shanghai"' > /etc/sysconfig/clock
 echo "UTC=true"  >> /etc/sysconfig/clock
 echo "ARC=false" >> /etc/sysconfig/clock
 
-
 history -c
 history -w
 rm -f /tmp/ipcalc
 rm -f /tmp/nameserver.txt
-
-sleep 100
-#rm -f $0
+rm -f $0
