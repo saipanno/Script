@@ -1,6 +1,16 @@
-wget -O /tmp/ipcalc http://211.147.13.165/download/ipcalc
-wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
+trap cleanup HUB INT TERM
+function cleanup {
+    for cmd in "${cleanup_commands[@]}"; do
+        eval $cmd
+    done
+}
 
+mkdir -p /tmp/centos_initialize
+
+wget -O /tmp//ipcalc http://211.147.13.165/download/ipcalc
+cleanup_cmds+="rm -f /tmp/ipcalc"
+wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
+cleanup_cmds+="rm -f /tmp/nameserver.txt"
 
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
@@ -18,6 +28,8 @@ chmod 400 /root/.ssh/authorized_keys
 
 
 for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
+    cp /etc/sysconfig/network-scripts/ifcfg-$device /tmp/centos_initialize/ifcfg-$device
+    cleanup_cmds+="mv -f /tmp/centos_initialize/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device"
     ip=`/sbin/ifconfig $device | awk '/inet add/ { gsub("addr:", "", $2); print $2 }'`
     mac=`/sbin/ifconfig $device | awk '/HWaddr/ { print $5 }'`
     if [ -z "$ip" ];then
@@ -42,7 +54,8 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
-rm -f /etc/resolv.conf
+mv -f /etc/resolv.conf /tmp/centos_initialize/resolv.conf
+cleanup_cmds+="mv -f /tmp/centos_initialize/resolv.conf /etc/resolv.conf"
 cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
 
@@ -67,4 +80,6 @@ history -c
 history -w
 rm -f /tmp/ipcalc
 rm -f /tmp/nameserver.txt
-rm -f $0
+
+sleep 100
+#rm -f $0
