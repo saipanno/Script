@@ -1,13 +1,12 @@
-# download data.
 wget -O /tmp/ipcalc http://211.147.13.165/download/ipcalc
 wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
 
-# disable SElinux.
+
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/sysconfig/selinux
 
-# init user.
+
 for user in rd op cdnscan; do
     useradd $user
 done
@@ -17,7 +16,7 @@ echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEArturSzUc2lqCMXQZ7Z3WjRQwGQJLLb6uMFPemi
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAxbCGj+L2wCywKvHeTaldW54ekOr9fnOXVO99mJm0NeB/WbeiD1ck5kHRKPMbeNU0jUf+JpJiC4zU/tFc2lTFKUx6Ed+j7YLf5/QBROju9x/rWTqpGYpGcpyirJBV4biEBEIz2JADO7DXZKqMQfvaCVhK8F/A6IKh90Fyb30BW/qahTWtxnRb0y0U5aWFZ8vXEqUiIIGZY1KA7H96+OMqycsrHwaYdvCzYIPkU2ZsLTHqsS3d3ohOb7IHv3LA4wJTLv/S+UdECGg75jhjGEiKn1gK2CLNGNjlBoCEGwyvwrjHl/evhm0i9qLE4Vzk2tVUVw6pshx+btGBrIW3qyYeqw== root@localhost.localdomain" >> /root/.ssh/authorized_keys
 chmod 400 /root/.ssh/authorized_keys
 
-# init network.
+
 for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
     ip=`/sbin/ifconfig $device | awk '/inet add/ { gsub("addr:", "", $2); print $2 }'`
     mac=`/sbin/ifconfig $device | awk '/HWaddr/ { print $5 }'`
@@ -43,27 +42,10 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
-cat /tmp/nameserver.txt | awk '
-    BEGIN {
-        FS=":";
-        NAMESERVER="8.8.8.8,8.8.4.4"
-    }
+rm -f /etc/resolv.conf
+cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
-    { 
-        if($1==NETWORK) {
-            NAMESERVER=$2
-        }
-    }
 
-    END {
-        split(NAMESERVER, NAMESERVERS, ",");
-        system("rm -f /etc/resolv.conf");
-        for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" }
-    }
-
-' NETWORK=$master_network
-
-# init service.
 SERVICES=(crond messagebus network sshd syslog rsyslog)
 sed -i 's/id:5:/id:3:/g' /etc/inittab
 for service in `/sbin/chkconfig --level 3 --list | awk '/:off/ { print $1 }'`; do
@@ -73,11 +55,16 @@ for service in ${SERVICES[@]}; do
     /sbin/chkconfig --level 3 $service on >> /dev/null
 done
 
-rm /etc/localtime
+
+rm -f /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo 'ZONE="Asia/Shanghai"' > /etc/sysconfig/clock
 echo "UTC=true"  >> /etc/sysconfig/clock
 echo "ARC=false" >> /etc/sysconfig/clock
 
+
 history -c
+history -w
+rm -f /tmp/ipcalc
+rm -f /tmp/nameserver.txt
 rm -f $0
