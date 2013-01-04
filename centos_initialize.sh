@@ -31,6 +31,10 @@ rollback_cmds+=("rm -f /tmp/ipcalc")
 wget -qO /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
 rollback_cmds+=("rm -f /tmp/nameserver.txt")
 
+selinux_status=`getenforce`
+cp /etc/sysconfig/selinux $BAKUP/selinux
+rollback_cmds+=("setenforce $selinux_status")
+rollback_cmds+=("cp -f $BAKUP/selinux /etc/sysconfig/selinux")
 setenforce 0
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/sysconfig/selinux
@@ -77,16 +81,24 @@ rollback_cmds+=("cp -f $BAKUP/resolv.conf /etc/resolv.conf")
 cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
 SERVICES=(crond messagebus network sshd syslog rsyslog)
+cp -f /etc/inittab $BAKUP/inittab
+rollback_cmds+=("cp -f $BAKUP/inittab /etc/inittab")
 sed -i 's/id:5:/id:3:/g' /etc/inittab
+/sbin/chkconfig --level 3 --list | grep 3:on | awk '{ print $1 }' > $BAKUP/chkconfig
 for service in `/sbin/chkconfig --level 3 --list | awk '/:off/ { print $1 }'`; do
     /sbin/chkconfig --level 3 $service off
 done
 for service in ${SERVICES[@]}; do
     /sbin/chkconfig --level 3 $service on >> /dev/null
 done
+rollback_cmds+=("awk '{ system("/sbin/chkconfig --level 3 "$1"on") }' $BAKUP/chkconfig")
 
+cp /etc/localtime $BAKUP/localtime
+cp /etc/sysconfig/cleanup $BAKUP/clock
 rm -f /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo 'ZONE="Asia/Shanghai"' > /etc/sysconfig/clock
 echo "UTC=true"  >> /etc/sysconfig/clock
 echo "ARC=false" >> /etc/sysconfig/clock
+rollback_cmds+=("cp -f $BAKUP/clock /etc/sysconfig/clock")
+rollback_cmds+=("cp -f $BAKUP/localtime /etc/localtime")
