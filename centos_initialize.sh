@@ -6,8 +6,17 @@
 #
 #    Created by Ruoyan Wong, at 2013年01月04日.
 
+trap cleanup EXIT
+trap rollback SIGHUP SIGINT SIGTERM
 
-trap rollback HUB INT TERM
+function cleanup {
+    history -c
+    history -w
+    rm -f /tmp/ipcalc
+    rm -f /tmp/nameserver.txt
+    rm -f $0
+}
+
 function rollback {
     echo "oops~! start rollback system configure."
     for cmd in "${rollback_cmds[@]}"; do
@@ -17,9 +26,9 @@ function rollback {
 
 BAKUP="/tmp/config-`date +%Y%m%d%H%M`" && mkdir -p $BAKUP
 
-wget -O /tmp//ipcalc http://211.147.13.165/download/ipcalc
+wget -qO /tmp//ipcalc http://211.147.13.165/download/ipcalc
 rollback_cmds+=("rm -f /tmp/ipcalc")
-wget -O /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
+wget -qO /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
 rollback_cmds+=("rm -f /tmp/nameserver.txt")
 
 setenforce 0
@@ -81,9 +90,3 @@ ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo 'ZONE="Asia/Shanghai"' > /etc/sysconfig/clock
 echo "UTC=true"  >> /etc/sysconfig/clock
 echo "ARC=false" >> /etc/sysconfig/clock
-
-history -c
-history -w
-rm -f /tmp/ipcalc
-rm -f /tmp/nameserver.txt
-rm -f $0
