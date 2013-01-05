@@ -24,6 +24,10 @@ function rollback {
     done
 }
 
+function bakup_config {
+    cp -r $1 $BAKUP
+}
+
 BAKUP="/tmp/config-`date +%Y%m%d%H%M`" && mkdir -p $BAKUP
 
 wget -qO /tmp//ipcalc http://211.147.13.165/download/ipcalc
@@ -32,7 +36,7 @@ wget -qO /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
 rollback_cmds+=("rm -f /tmp/nameserver.txt")
 
 selinux_status=`getenforce`
-cp /etc/sysconfig/selinux $BAKUP/selinux
+bakup_config /etc/sysconfig/selinux
 rollback_cmds+=("setenforce $selinux_status")
 rollback_cmds+=("cp -f $BAKUP/selinux /etc/sysconfig/selinux")
 setenforce 0
@@ -50,7 +54,7 @@ chmod 400 /root/.ssh/authorized_keys
 
 
 for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
-    cp /etc/sysconfig/network-scripts/ifcfg-$device $BAKUP/ifcfg-$device
+    bakup_config /etc/sysconfig/network-scripts/ifcfg-$device
     rollback_cmds+=("cp -f $BAKUP/ifcfg-$device /etc/sysconfig/network-scripts/ifcfg-$device")
     ip=`/sbin/ifconfig $device | awk '/inet add/ { gsub("addr:", "", $2); print $2 }'`
     mac=`/sbin/ifconfig $device | awk '/HWaddr/ { print $5 }'`
@@ -76,12 +80,12 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
-mv -f /etc/resolv.conf $BAKUP/resolv.conf
+bakup_config /etc/resolv.conf
 rollback_cmds+=("cp -f $BAKUP/resolv.conf /etc/resolv.conf")
-cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4" } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
+cat /tmp/nameserver.txt | awk 'BEGIN { FS=":"; NAMESERVER="8.8.8.8,8.8.4.4"; system("rm -f /etc/resolv.conf") } { if($1==NETWORK) { NAMESERVER=$2 } } END { split(NAMESERVER, NAMESERVERS, ","); for ( i in NAMESERVERS ) { printf "nameserver "NAMESERVERS[i]"\n" >> "/etc/resolv.conf" } }' NETWORK=$master_network
 
 SERVICES=(crond messagebus network sshd syslog rsyslog)
-cp -f /etc/inittab $BAKUP/inittab
+bakup_config /etc/inittab
 rollback_cmds+=("cp -f $BAKUP/inittab /etc/inittab")
 sed -i 's/id:5:/id:3:/g' /etc/inittab
 /sbin/chkconfig --level 3 --list | grep 3:on | awk '{ print $1 }' > $BAKUP/chkconfig
@@ -93,8 +97,8 @@ for service in ${SERVICES[@]}; do
 done
 rollback_cmds+=("awk '{ system("/sbin/chkconfig --level 3 "$1"on") }' $BAKUP/chkconfig")
 
-cp /etc/localtime $BAKUP/localtime
-cp /etc/sysconfig/cleanup $BAKUP/clock
+bakup_config /etc/localtime
+bakup_config /etc/sysconfig/cleanup
 rm -f /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo 'ZONE="Asia/Shanghai"' > /etc/sysconfig/clock
