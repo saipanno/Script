@@ -90,5 +90,5 @@ if __name__ == '__main__':
 
     result_log_file = '%s/checking.txt' % config['logdir'] 
     with open(result_log_file, 'w') as f:
-    for address in kitten.keys():
-        f.write('%s : %s\n' % (address, kitten[address]))
+        for address in kitten.keys():
+            f.write('%s : %s\n' % (address, kitten[address]))
