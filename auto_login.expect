@@ -202,7 +202,7 @@ expect eof {
             puts $file "$config(address)"
         }
     } elseif { $config(operate) == "test" }  {
-        set file [open $config(logdir)/$status.stat a]
+        set file [open $config(logdir)/$status.txt a]
         puts $file "$config(address)"
     } elseif { $config(operate) == "interact" }  {
         puts "Trigger exception: $status"
