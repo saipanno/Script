@@ -19,7 +19,7 @@ from multiprocessing import Pool, Manager
 
 def running_command(command):
     try:
-        do = subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
+        subprocess.call('%s >> /dev/null 2>&1' % command, shell=True)
     except Exception:
         pass
 
