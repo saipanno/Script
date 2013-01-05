@@ -15,7 +15,7 @@ Script
 
 
 ###### auto_login.expect
-联通性测试脚本,支持socket测试以及ping测试.
+SSH交互脚本,支持登录测试,执行命令.
 
     $ expect auto_login.expect help
     Usage: auto_login.expect [arguments]: 
@@ -32,9 +32,7 @@ Script
         t  TIMEOUT 程序内建超时
 
 ###### multiexpect.py
-SSH交互脚本,基于auto_login.expect
-
-支持登录测试.执行命令以及从模板执行命令.
+批量SSH交互脚本,基于auto_login.expect.支持登录测试.执行命令以及从模板执行命令.
 
     $ python multiexpect.py -h
     usage: multiexpect.py [-h] -o {run,test} [-u USER] [-p PORT] [-d LOGDIR]
