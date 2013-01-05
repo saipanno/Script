@@ -116,7 +116,7 @@ expect {
     "Permission denied (*)" {
         set status "nopasswd"
         if { $config(operate) == "run" || $config(operate) == "test" } {
-            set file [open $config(logdir)/$status.txt a]
+            set file [open $config(logdir)/$status.stat a]
             puts $file "$config(address)"
             close $file
         } elseif { $config(operate) == "interact" } {
@@ -138,7 +138,7 @@ expect {
             # fuck! Match authentication failed!
             set status "nopasswd"
             if { $config(operate) == "run" || $config(operate) == "test" } {
-                set file [open $config(logdir)/$status.txt a]
+                set file [open $config(logdir)/$status.stat a]
                 puts $file "$config(address)"
                 close $file
             } elseif { $config(operate) == "interact" } {
@@ -181,7 +181,7 @@ expect {
         set status "timeout"
         # haha! Match expect build-in timeout.
         if { $config(operate) == "run" || $config(operate) == "test" } {
-            set file [open $config(logdir)/$status.txt a]
+            set file [open $config(logdir)/$status.stat a]
             puts $file "$config(address)"
             close $file
         } elseif { $config(operate) == "interact" }  {
@@ -198,11 +198,11 @@ expect eof {
             set file [open $config(logdir)/$config(address).txt a]
             puts $file "$expect_out(buffer)"
         } else {
-            set file [open $config(logdir)/$status.txt a]
+            set file [open $config(logdir)/$status.stat a]
             puts $file "$config(address)"
         }
     } elseif { $config(operate) == "test" }  {
-        set file [open $config(logdir)/$status.txt a]
+        set file [open $config(logdir)/$status.stat a]
         puts $file "$config(address)"
     } elseif { $config(operate) == "interact" }  {
         puts "Trigger exception: $status"

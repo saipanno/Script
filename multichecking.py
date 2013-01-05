@@ -62,6 +62,7 @@ if __name__ == '__main__':
     subdirectories = '%s/%s' % (config['logdir'], time.strftime("%Y%m%d%H%M"))
     running_command('mkdir -p %s' % subdirectories)
     running_command('mv -f %s/*.txt %s' % (config['logdir'], subdirectories))
+    running_command('mv -f %s/*.stat %s' % (config['logdir'], subdirectories))
 
     manager = Manager()
     kitten = manager.dict()
