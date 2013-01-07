@@ -10,11 +10,10 @@ trap cleanup EXIT
 trap rollback SIGHUP SIGINT SIGTERM
 
 function cleanup {
-    history -c
-    history -w
+    history -cw
+    rm -f $0
     rm -f /tmp/ipcalc
     rm -f /tmp/nameserver.txt
-    rm -f $0
 }
 
 function rollback {
@@ -32,16 +31,16 @@ function bakup_config {
 SERVICES=(crond messagebus network sshd syslog rsyslog)
 BAKUP="/tmp/config-`date +%Y%m%d%H%M`" && mkdir -p $BAKUP
 
-wget -qO /tmp//ipcalc http://211.147.13.165/download/ipcalc
+wget -qO /tmp/ipcalc http://211.147.13.165/download/ipcalc
 wget -qO /tmp/nameserver.txt http://211.147.13.165/download/nameserver.txt
 rollback_cmds+=("rm -f /tmp/ipcalc")
 rollback_cmds+=("rm -f /tmp/nameserver.txt")
 
 selinux_status=`getenforce`
-bakup_config /etc/sysconfig/selinux
+bakup_config /etc/selinux/config 
 setenforce 0
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
-sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/sysconfig/selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config 
+sed -i 's/SELINUX=permissive/SELINUX=disabled/g' /etc/selinux/config
 rollback_cmds+=("setenforce $selinux_status")
 rollback_cmds+=("cp -f $BAKUP/selinux /etc/sysconfig/selinux")
 
