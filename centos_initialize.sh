@@ -1,6 +1,6 @@
 #!/bin/bash 
 #
-#    initialize.sh,
+#   centos_initialize.sh , 
 #
 #         CentOS system initialize script.
 #
