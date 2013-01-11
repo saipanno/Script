@@ -62,16 +62,25 @@ SSH交互脚本,支持登录测试,执行命令.
 
 **脚本模板**: 用`{`和`}`作为外部变量的定界符,模板中的`{var}`会自动按照变量文件中的定义进行替换.同时模板依然支持shell中的`$`变量
 
-    device=`ifconfig | awk '/^eth|^em/ { print $1 }' | head -n1`
-    mac=`ifconfig $device | grep HWaddr | awk '{ print $5 }'`
-    echo "DEVICE=$device"    > /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "TYPE=Ethernet"     >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "BOOTPROTO=static"  >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "HWADDR=$mac"       >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "IPADDR={address}"  >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "NETMASK={netmask}" >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "GATEWAY={gateway}" >> /etc/sysconfig/network-scripts/ifcfg-$device
-    echo "ONBOOT=yes"        >> /etc/sysconfig/network-scripts/ifcfg-$device
+
+    for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
+      mac=`ifconfig $device | grep HWaddr | awk '{ print $5 }'` 
+      if [ "$device" == "eth0" -o "$device" == "em1" ]; then
+        echo "DEVICE=$device"    > /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "TYPE=Ethernet"     >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "BOOTPROTO=static"  >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "HWADDR=$mac"       >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "IPADDR={address}"  >> /etc/sysconfig/network-scripts/ifcfg-$device                                                                                                       
+        echo "NETMASK={netmask}" >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "GATEWAY={gateway}" >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "ONBOOT=yes"        >> /etc/sysconfig/network-scripts/ifcfg-$device
+      else
+        echo "DEVICE=$device"    > /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "TYPE=Ethernet"     >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "HWADDR=$mac"       >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "ONBOOT=no"        >> /etc/sysconfig/network-scripts/ifcfg-$device
+      fi  
+    done
 **变量文件**: 用`|`作为key和value的分隔符,用`,`作为多个变量赋值的分隔符,用`=`作为变量赋值的分隔符
 
     60.175.193.194|address=61.132.226.195,gateway=61.132.226.254,netmask=255.255.255.192
