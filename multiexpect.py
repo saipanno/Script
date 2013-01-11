@@ -111,7 +111,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
     for host in hosts:
-        script = create_script_from_template(config['script'], detail_dict.get('host', dict()))
+        script = create_script_from_template(config['script'], detail_dict.get(host, dict()))
         pool.apply_async(running_command, ('%s f %s a %s' % (COMMAND, script, host), ))
 
     pool.close()
