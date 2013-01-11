@@ -70,7 +70,7 @@ SSH交互脚本,支持登录测试,执行命令.
         echo "TYPE=Ethernet"     >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "BOOTPROTO=static"  >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "HWADDR=$mac"       >> /etc/sysconfig/network-scripts/ifcfg-$device
-        echo "IPADDR={address}"  >> /etc/sysconfig/network-scripts/ifcfg-$device                                                                                                       
+        echo "IPADDR={address}"  >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "NETMASK={netmask}" >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "GATEWAY={gateway}" >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "ONBOOT=yes"        >> /etc/sysconfig/network-scripts/ifcfg-$device
