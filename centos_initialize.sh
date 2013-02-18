@@ -97,6 +97,12 @@ for service in ${SERVICES[@]}; do
     /sbin/chkconfig --level 3 $service on >> /dev/null
 done
 
+bakup_config /etc/hosts
+rollback_cmds+=("cp -f $BAKUP/hosts /etc/hosts")
+hostname localhost.localdomain
+echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4" > /etc/hosts
+echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
+
 bakup_config /etc/localtime
 bakup_config /etc/sysconfig/cleanup
 rollback_cmds+=("cp -f $BAKUP/clock /etc/sysconfig/clock")
