@@ -64,6 +64,7 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
         echo "TYPE=Ethernet"    >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "BOOTPROTO=static" >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "HWADDR=$mac"      >> /etc/sysconfig/network-scripts/ifcfg-$device
+        echo "PEERDNS=no"       >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "ONBOOT=no"        >> /etc/sysconfig/network-scripts/ifcfg-$device
     else
         netmask=`/sbin/ifconfig $device | awk -F":" '/Mask:/ { print $4 }'`
@@ -78,6 +79,7 @@ for device in `/sbin/ifconfig -a | awk '/^e/ { print $1 }'`; do
             echo "GATEWAY=$gateway" >> /etc/sysconfig/network-scripts/ifcfg-$device
             master_network=`perl /tmp/ipcalc $ip $netmask | awk '/Network/ { print $2 }'`
         fi
+        echo "PEERDNS=no"       >> /etc/sysconfig/network-scripts/ifcfg-$device
         echo "ONBOOT=yes"       >> /etc/sysconfig/network-scripts/ifcfg-$device
     fi
 done
