@@ -106,7 +106,7 @@ echo "127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdom
 echo "::1         localhost localhost.localdomain localhost6 localhost6.localdomain6" >> /etc/hosts
 
 bakup_config /etc/localtime
-bakup_config /etc/sysconfig/cleanup
+bakup_config /etc/sysconfig/clock
 rollback_cmds+=("cp -f $BAKUP/clock /etc/sysconfig/clock")
 rollback_cmds+=("cp -f $BAKUP/localtime /etc/localtime")
 rm -f /etc/localtime
