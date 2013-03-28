@@ -1,1 +1,0 @@
- dmidecode | grep "Serial Number" | head -n1 | awk '{ print $3 }'
