@@ -1,4 +1,4 @@
-echo "Jo2ThN6AIZAY" | passwd root --stdin
+echo "PASSWORD" | passwd root --stdin
 echo "NETWORKING=yes" > /etc/sysconfig/network
 echo "NETWORKING_IPV6=no" >> /etc/sysconfig/network
 echo "HOSTNAME=ku6" >> /etc/sysconfig/network
