@@ -1,2 +1,4 @@
 ssh.*
 *.pyc
+
+.DS_Store
