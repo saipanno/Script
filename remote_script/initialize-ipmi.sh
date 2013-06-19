@@ -23,5 +23,5 @@ ipmitool lan set $IPMI_CHANNEL_ID access on
 ipmitool user set name $IPMI_USER_ID $IPMI_USERNAME
 ipmitool user set password $IPMI_USER_ID $IPMI_PASSWORD
 ipmitool user enable $IPMI_USER_ID
-ipmitool channel setaccess $IPMI_CHANNEL_ID $IPMI_USER_ID callin=on ipmi=on link=on privilege=4
+ipmitool channel setaccess 1 $IPMI_USER_ID callin=on ipmi=on link=on privilege=4
 service ipmi stop
