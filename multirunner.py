@@ -91,6 +91,7 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    with open('%s/running.stat' % config['logdir'], 'a') as f:
-        for address in kitten.keys():
-            f.write('%s : %s\n' % (address, kitten[address]))
+    for address in kitten.keys():
+        with open('%s/%s.stat' % (config['logdir'], address), 'a') as f:
+            for oneline in kitten[address].split('\n'):
+                f.write('%s\n' % oneline)
