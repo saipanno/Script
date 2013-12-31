@@ -48,7 +48,7 @@ def subprocess_caller(cmd):
         return dict(output=output, error=error, code=code)
 
 
-def super_remote_runner(script_template, envs):
+def super_remote_runner(script_template, data):
 
     """
     :Return Code Description:
@@ -71,10 +71,10 @@ def super_remote_runner(script_template, envs):
     """
 
     template = Template(script_template)
-    script = template.render(envs.get(env.host, dict()))
+    script = template.render(data.get(env.host, dict()))
 
     try:
-        fruit = run(script, shell=True, quiet=True)
+        result = run(script, shell=True, quiet=True)
     except SystemExit:
         output = dict(code=2,
                       error_message='Ssh Authentication Failed',
@@ -133,9 +133,9 @@ def super_remote_runner(script_template, envs):
                           error_message='Base Exception: %s' % e,
                           message='')
     else:
-        output = dict(code=fruit.return_code,
-                      error_message=fruit.stderr if fruit.stderr else '',
-                      message=fruit.stdout)
+        output = dict(code=result.return_code,
+                      error_message=result.stderr if result.stderr else '',
+                      message=result.stdout)
 
     return output
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
                         help='Env for template file')
     config = vars(parser.parse_args())
 
-    sub_directory = '%s/%s' % (config['logdir'], time.strftime("%Y%m%d%H%M"))
+    sub_directory = '%s/%s' % (config['logdir'], time.strftime('%Y%m%d%H%M%S'))
     try:
         os.makedirs(sub_directory)
         for f in os.listdir(config['logdir']):
@@ -179,9 +179,9 @@ if __name__ == '__main__':
         for oneline in f:
             hosts.append(oneline.rstrip())
 
-    script = str()
+    script_template = str()
     with open(config['script']) as f:
-        script = '\n'.join(oneline.rstrip() for oneline in f)
+        script_template = '\n'.join(oneline.rstrip() for oneline in f)
 
     template_data = dict()
     if config['variable'] is not None and os.path.isfile(config['variable']):
@@ -213,6 +213,6 @@ if __name__ == '__main__':
     with show('everything'):
 
         fruit = execute(super_remote_runner,
-                        script=script,
-                        envs=template_data,
+                        script_template=script_template,
+                        data=template_data,
                         hosts=hosts)
