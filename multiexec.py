@@ -46,43 +46,19 @@ def subprocess_caller(cmd):
         return dict(output=output, error=error, code=code)
 
 
-def remote_runner_by_ssh(host, script_template, data, config, fruit):
+def remote_runner_by_ssh(host, template, env, share_dict=None):
 
-    """
-    :Return Code Description:
-
-        0: PING SUCCESS(SUCCESS)
-        1: PING FAIL(TIMEOUT)
-
-        0: SSH SUCCESS(SUCCESS)
-        1: SSH FAIL(TIMEOUT, RESET, NO_ROUTE)
-        2: SSH AUTHENTICATE FAIL(验证错误, 密钥格式错误, 密钥无法找到)
-        3: COMMAND EXECUTE TIMEOUT(脚本执行超时)
-        4: COMMAND EXECUTE FAIL(脚本中途失败)
-
-        10: NETWORK ERROR(ADDRESS ERROR)
-
-        20: OTHER ERROR
-        100: DEFAULT
-
-        SSH认证是先看private_key，后看password.
-    """
-
-    template = Template(script_template)
-    script = template.render(data.get(host, dict()))
+    script_template = Template(template)
+    script = script_template.render(env)
 
     for oneline_cmd in script.split('\n'):
 
         try:
             r = subprocess_caller('sudo ssh %s %s' % (host, oneline_cmd))
         except Exception, e:
-            fruit[host] = dict(code=2,
-                               error_message=e,
-                               message='')
+            share_dict[host] = dict(code=2, error_message=e, message='')
         else:
-            fruit[host] = dict(code=r.code,
-                               error_message=r.error,
-                               message=r.output)
+            share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
 
 
 if __name__ == '__main__':
@@ -90,15 +66,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('target',
                         help='hostname or address file')
-    #parser.add_argument('-u', dest='user',
-    #                    help='Username when making SSH connections, (default: %(default)s)', default='root')
-    #parser.add_argument('-p', dest='password',
-    #                    help='Password when making SSH connections')
-    #parser.add_argument('-i', dest='private',
-    #                    help='Private key when making SSH connections, (default: %(default)s)',
-    #                    default='%s/.ssh/saipanno_rsa' % os.environ['HOME'])
-    #parser.add_argument('-P', dest='port',
-    #                    help='Port when making SSH connections, (default: %(default)s)', default=22, type=int)
     parser.add_argument('-d', dest='logdir',
                         help='Syslog directory, (default: %(default)s)', default='%s/logging' % os.environ['HOME'])
     parser.add_argument('-r', dest='proc',
@@ -124,32 +91,33 @@ if __name__ == '__main__':
         for oneline in f:
             hosts.append(oneline.rstrip())
 
-    script_template = str()
+    template_script = str()
     with open(config['script']) as f:
-        script_template = '\n'.join(oneline.rstrip() for oneline in f)
+        template_script = '\n'.join(oneline.rstrip() for oneline in f)
 
-    template_data = dict()
+    template_env = dict()
     if config['variable'] is not None and os.path.isfile(config['variable']):
         with open(config['variable']) as f:
             for oneline in f:
                 try:
                     address = oneline.split("|")[0]
                     data = oneline.split("|")[1]
-                    template_data[address] = dict()
+                    template_env[address] = dict()
                     for var in data.split(","):
                         k, v = var.split("=")
-                        template_data[address][k.strip()] = v.strip()
+                        template_env[address][k.strip()] = v.strip()
                 except ValueError:
                     pass
 
     manager = Manager()
-    final_result = manager.dict()
+    fruit = manager.dict()
 
     pool = Pool(processes=config['proc'])
 
-    jobs = list()
+    for node in hosts:
+        pool.apply_async(remote_runner_by_ssh, (node, template_script, template_env.get(node, dict())))
 
-    for host in hosts:
-        pool.apply_async(remote_runner_by_ssh, (host, script_template, config, final_result))
+    pool.close()
+    pool.join()
 
-    print final_result
+    print fruit
