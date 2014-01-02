@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 #
-#    multirunner.py,
+#    multi_local_runner.py,
 #
 #         本地并发执行脚本 
 #

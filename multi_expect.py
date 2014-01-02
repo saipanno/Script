@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 #
-#    multiexpect.py,
+#    multi_expect.py,
 #
 #         expect并发执行脚本 
 #

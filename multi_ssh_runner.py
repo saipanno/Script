@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #
 # Copyright (c) 2013 Ruoyan Wong(@saipanno).
@@ -114,13 +114,11 @@ if __name__ == '__main__':
 
     pool = Pool(processes=config['proc'])
 
-    for node in hosts:
-        pool.apply_async(remote_runner_by_ssh, (node, template_script, template_env.get(node, dict()), kitten))
+    for host in hosts:
+        pool.apply_async(remote_runner_by_ssh, (host, template_script, template_env.get(host, dict()), kitten))
 
     pool.close()
     pool.join()
-
-    print kitten
 
     for address, x in kitten.items():
         with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
