@@ -109,23 +109,33 @@ if __name__ == '__main__':
                 except ValueError:
                     pass
 
+    jobs = list()
     manager = Manager()
     kitten = manager.dict()
 
     pool = Pool(processes=config['proc'])
 
-    for host in hosts:
-        pool.apply_async(remote_runner_by_ssh, (host, template_script, template_env.get(host, dict()), kitten))
+    try:
+        for host in hosts:
+            pool.apply_async(remote_runner_by_ssh,
+                             (host, template_script, template_env.get(host, dict()), kitten))
 
-    pool.close()
-    pool.join()
+        pool.close()
 
-    for address, x in kitten.items():
-        with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
-            f.write('%s: %s\n' % (address, x.get('code', '-1')))
+    except (KeyboardInterrupt, SystemExit):
+        print "Caught KeyboardInterrupt, terminating workers"
+        pool.terminate()
 
-        for t, messages in x.items():
-            if t != 'code' and len(messages) > 0:
-                with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
-                    for oneline in messages:
-                        f.write('%s\n' % oneline)
+    finally:
+
+        pool.join()
+
+        for address, x in kitten.items():
+            with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
+                f.write('%s: %s\n' % (address, x.get('code', '-1')))
+
+            for t, messages in x.items():
+                if t != 'code' and len(messages) > 0:
+                    with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
+                        for oneline in messages:
+                            f.write('%s\n' % oneline)
