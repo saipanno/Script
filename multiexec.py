@@ -71,12 +71,10 @@ def remote_runner_by_ssh(host, script_template, data, config, fruit):
     template = Template(script_template)
     script = template.render(data.get(host, dict()))
 
-    ssh_prefix = 'sudo ssh %s@%s' % (config['user'], host)
-
     for oneline_cmd in script.split('\n'):
 
         try:
-            r = subprocess_caller('%s %s' % (ssh_prefix, oneline_cmd))
+            r = subprocess_caller('sudo ssh %s %s' % (host, oneline_cmd))
         except Exception, e:
             fruit[host] = dict(code=2,
                                error_message=e,
@@ -92,15 +90,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('target',
                         help='hostname or address file')
-    parser.add_argument('-u', dest='user',
-                        help='Username when making SSH connections, (default: %(default)s)', default='root')
-    parser.add_argument('-p', dest='password',
-                        help='Password when making SSH connections')
-    parser.add_argument('-i', dest='private',
-                        help='Private key when making SSH connections, (default: %(default)s)',
-                        default='%s/.ssh/saipanno_rsa' % os.environ['HOME'])
-    parser.add_argument('-P', dest='port',
-                        help='Port when making SSH connections, (default: %(default)s)', default=22, type=int)
+    #parser.add_argument('-u', dest='user',
+    #                    help='Username when making SSH connections, (default: %(default)s)', default='root')
+    #parser.add_argument('-p', dest='password',
+    #                    help='Password when making SSH connections')
+    #parser.add_argument('-i', dest='private',
+    #                    help='Private key when making SSH connections, (default: %(default)s)',
+    #                    default='%s/.ssh/saipanno_rsa' % os.environ['HOME'])
+    #parser.add_argument('-P', dest='port',
+    #                    help='Port when making SSH connections, (default: %(default)s)', default=22, type=int)
     parser.add_argument('-d', dest='logdir',
                         help='Syslog directory, (default: %(default)s)', default='%s/logging' % os.environ['HOME'])
     parser.add_argument('-r', dest='proc',
