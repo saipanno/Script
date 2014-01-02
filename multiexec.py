@@ -46,23 +46,15 @@ def subprocess_caller(cmd):
         return dict(output=output, error=error, code=code)
 
 
-def remote_runner_by_ssh(host, template, env, share_dict=None):
+def remote_runner_by_ssh(host, templates, env, share_dict):
 
-    script_template = Template(template)
-    script = script_template.render(env)
+    for template in templates:
 
-    for oneline_cmd in script.split('\n'):
+        script_template = Template(template)
+        script = script_template.render(env)
 
-        if isinstance(share_dict, dict):
-
-            try:
-                r = subprocess_caller('sudo ssh %s %s' % (host, oneline_cmd))
-            except Exception, e:
-                share_dict[host] = dict(code=2, error_message=e, message='')
-            else:
-                share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
-        else:
-            pass
+        r = subprocess_caller('sudo ssh %s %s' % (host, script))
+        share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
 
 
 if __name__ == '__main__':
@@ -90,14 +82,11 @@ if __name__ == '__main__':
         print('Failed to initialize the log dir.')
         sys.exit(1)
 
-    hosts = list()
     with open(config['target']) as f:
-        for oneline in f:
-            hosts.append(oneline.rstrip())
+        hosts = [oneline.rstrip() for oneline in f]
 
-    template_script = str()
     with open(config['script']) as f:
-        template_script = '\n'.join(oneline.rstrip() for oneline in f)
+        template_script = [oneline.rstrip() for oneline in f]
 
     template_env = dict()
     if config['variable'] is not None and os.path.isfile(config['variable']):
