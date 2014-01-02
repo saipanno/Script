@@ -20,7 +20,6 @@ from argparse import ArgumentParser
 
 def running_command(template, data=None, fruit=None):
 
-
     if isinstance(data, dict):
         template = Template(template)
         script = template.render(data)

@@ -31,9 +31,7 @@ import shutil
 import argparse
 import subprocess
 from jinja2 import Template
-from fabric.api import env, run, show, hide, execute
-from paramiko.ssh_exception import SSHException
-from fabric.exceptions import NetworkError, CommandTimeout
+from multiprocessing import Pool, Manager
 
 
 def subprocess_caller(cmd):
@@ -42,13 +40,13 @@ def subprocess_caller(cmd):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, error = p.communicate()
         code = p.returncode
-    except (OSError, ValueError):
-        return dict()
+    except (OSError, ValueError), e:
+        return dict(output=str(), error=e, code=1)
     else:
         return dict(output=output, error=error, code=code)
 
 
-def super_remote_runner(script_template, data):
+def remote_runner_by_ssh(host, script_template, data, config, fruit):
 
     """
     :Return Code Description:
@@ -71,73 +69,22 @@ def super_remote_runner(script_template, data):
     """
 
     template = Template(script_template)
-    script = template.render(data.get(env.host, dict()))
+    script = template.render(data.get(host, dict()))
 
-    try:
-        result = run(script, shell=True, quiet=True)
-    except SystemExit:
-        output = dict(code=2,
-                      error_message='Ssh Authentication Failed',
-                      message='')
+    ssh_prefix = 'sudo ssh %s@%s' % (config['user'], host)
 
-    # 远程命令执行时间超过`env.command_timeout`时触发
-    except CommandTimeout:
-        output = dict(code=3,
-                      error_message='Remote Command Execute Timeout',
-                      message='')
+    for oneline_cmd in script.split('\n'):
 
-    # 通过设定`env.disable_known_hosts = True`可以避归此问题，但在异常处理上依然保留此逻辑。
-    except SSHException, e:
-        if 'Invalid key' in e.__str__():
-            output = dict(code=2,
-                          error_message='User’s Known-Hosts Check Failed',
-                          message='')
+        try:
+            r = subprocess_caller('%s %s' % (ssh_prefix, oneline_cmd))
+        except Exception, e:
+            fruit[host] = dict(code=2,
+                               error_message=e,
+                               message='')
         else:
-            output = dict(code=20,
-                          error_message='SSHException Exception: %s' % e,
-                          message='')
-
-    # 匹配错误的密钥路径
-    except IOError, e:
-        if 'No such file or directory' in e.__str__():
-            output = dict(code=2,
-                          error_message='Ssh Private Key Not Found',
-                          message='')
-        else:
-            output = dict(code=20,
-                          error_message='IOError Exception: %s' % e,
-                          message='')
-
-    except NetworkError, e:
-        # 匹配SSH连接超时
-        if 'Timed out trying to connect to' in e.__str__() or 'Low level socket error connecting' in e.__str__():
-            output = dict(code=1,
-                          error_message='Ssh Connection Timeout',
-                          message='')
-        elif 'Name lookup failed for' in e.__str__():
-            output = dict(code=10,
-                          error_message='Incorrect Node Address',
-                          message='')
-        else:
-            output = dict(code=20,
-                          error_message='NetworkError Exception: %s' % e,
-                          message='')
-
-    except Exception, e:
-        if 'Private key file is encrypted' in e.__str__():
-            output = dict(code=2,
-                          error_message='Private key file is encrypted',
-                          message='')
-        else:
-            output = dict(code=20,
-                          error_message='Base Exception: %s' % e,
-                          message='')
-    else:
-        output = dict(code=result.return_code,
-                      error_message=result.stderr if result.stderr else '',
-                      message=result.stdout)
-
-    return output
+            fruit[host] = dict(code=r.code,
+                               error_message=r.error,
+                               message=r.output)
 
 
 if __name__ == '__main__':
@@ -197,22 +144,14 @@ if __name__ == '__main__':
                 except ValueError:
                     pass
 
-    env.parallel = True
-    env.warn_only = True
-    env.disable_known_hosts = True
+    manager = Manager()
+    final_result = manager.dict()
 
-    env.timeout = 30
-    env.command_timeout = 60
+    pool = Pool(processes=config['proc'])
 
-    env.pool_size = config['proc']
-    env.user = config['user']
-    env.password = config['password']
-    env.key_filename = config['private']
-    env.port = config['port']
+    jobs = list()
 
-    with show('everything'):
+    for host in hosts:
+        pool.apply_async(remote_runner_by_ssh, (host, script_template, config, final_result))
 
-        fruit = execute(super_remote_runner,
-                        script_template=script_template,
-                        data=template_data,
-                        hosts=hosts)
+    print final_result
