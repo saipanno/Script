@@ -48,21 +48,21 @@ def subprocess_caller(cmd):
 
 def remote_runner_by_ssh(host, templates, env, share_dict):
 
+    fruit = dict(code=-1,
+                 message=list(),
+                 error_message=list())
+
     for template in templates:
 
         script_template = Template(template)
         script = script_template.render(env)
 
         r = subprocess_caller('sudo ssh %s %s' % (host, script))
+        fruit['code'] = r['code']
+        fruit['error_message'].extend(r['error'].split('\n'))
+        fruit['message'].extend(r['output'].split('\n'))
 
-        if share_dict.get(host, None) is None:
-            share_dict[host] = dict(code=r['code'],
-                                    error_message=r['error'].split('\n'),
-                                    message=r['output'].split('\n'))
-        elif share_dict.get(host, None) is not None and isinstance(share_dict[host], dict):
-            share_dict[host]['code'] = r['code']
-            share_dict[host]['error_message'].extend(r['error'].split('\n'))
-            share_dict[host]['message'].extend(r['output'].split('\n'))
+    share_dict[host] = fruit
 
 if __name__ == '__main__':
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
             f.write('%s: %s\n' % (address, x.get('code', '-1')))
 
         for t, messages in x.items():
-            if messages != 'code' and len(messages) > 0:
+            if t != 'code' and len(messages) > 0:
                 with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
                     for oneline in messages:
                         f.write('%s\n' % oneline)
