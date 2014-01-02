@@ -53,12 +53,16 @@ def remote_runner_by_ssh(host, template, env, share_dict=None):
 
     for oneline_cmd in script.split('\n'):
 
-        try:
-            r = subprocess_caller('sudo ssh %s %s' % (host, oneline_cmd))
-        except Exception, e:
-            share_dict[host] = dict(code=2, error_message=e, message='')
+        if isinstance(share_dict, dict):
+
+            try:
+                r = subprocess_caller('sudo ssh %s %s' % (host, oneline_cmd))
+            except Exception, e:
+                share_dict[host] = dict(code=2, error_message=e, message='')
+            else:
+                share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
         else:
-            share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
+            pass
 
 
 if __name__ == '__main__':
@@ -110,14 +114,14 @@ if __name__ == '__main__':
                     pass
 
     manager = Manager()
-    fruit = manager.dict()
+    kitten = manager.dict()
 
     pool = Pool(processes=config['proc'])
 
     for node in hosts:
-        pool.apply_async(remote_runner_by_ssh, (node, template_script, template_env.get(node, dict())))
+        pool.apply_async(remote_runner_by_ssh, (node, template_script, template_env.get(node, dict()), kitten))
 
     pool.close()
     pool.join()
 
-    print fruit
+    print kitten
