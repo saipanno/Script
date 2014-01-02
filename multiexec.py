@@ -59,8 +59,8 @@ def remote_runner_by_ssh(host, templates, env, share_dict):
 
         r = subprocess_caller('sudo ssh %s %s' % (host, script))
         fruit['code'] = r['code']
-        fruit['error_message'].extend(r['error'].split('\n'))
-        fruit['message'].extend(r['output'].split('\n'))
+        fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
+        fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
 
     share_dict[host] = fruit
 
@@ -119,6 +119,8 @@ if __name__ == '__main__':
 
     pool.close()
     pool.join()
+
+    print kitten
 
     for address, x in kitten.items():
         with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
