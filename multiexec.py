@@ -83,7 +83,7 @@ if __name__ == '__main__':
     try:
         os.makedirs(sub_directory)
         for f in os.listdir(config['logdir']):
-            if f.endswith('.txt'):
+            if f.endswith('.txt') or f.endswith('.log'):
                 shutil.move(os.path.join(config['logdir'], f), sub_directory)
     except (OSError, shutil.Error):
         print('Failed to initialize the log dir.')
@@ -120,8 +120,12 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    for k, v in kitten.items():
+    for address, x in kitten.items():
+        with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
+            f.write('%s: %s\n' % (address, x.get('code', '-1')))
 
-        with open('%s.log' % os.path.join(config['logdir'], k), 'w') as f:
-            for oneline in v:
-                f.write('%s\n' % oneline)
+        for t, msgs in x.items():
+            if len(msgs) > 0:
+                with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
+                    for oneline in msgs:
+                        f.write('%s\n' % oneline)
