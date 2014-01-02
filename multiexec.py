@@ -54,8 +54,15 @@ def remote_runner_by_ssh(host, templates, env, share_dict):
         script = script_template.render(env)
 
         r = subprocess_caller('sudo ssh %s %s' % (host, script))
-        share_dict[host] = dict(code=r['code'], error_message=r['error'], message=r['output'])
 
+        if share_dict.get(host, None) is None:
+            share_dict[host] = dict(code=r['code'],
+                                    error_message=r['error'].split('\n'),
+                                    message=r['output'].split('\n'))
+        elif share_dict.get(host, None) is not None and isinstance(share_dict[host], dict):
+            share_dict[host]['code'] = r['code']
+            share_dict[host]['error_message'].extend(r['error'].split('\n'))
+            share_dict[host]['message'].extend(r['output'].split('\n'))
 
 if __name__ == '__main__':
 
@@ -72,7 +79,7 @@ if __name__ == '__main__':
                         help='Env for template file')
     config = vars(parser.parse_args())
 
-    sub_directory = '%s/%s' % (config['logdir'], time.strftime('%Y%m%d%H%M%S'))
+    sub_directory = os.path.join(config['logdir'], time.strftime('%Y%m%d%H%M%S'))
     try:
         os.makedirs(sub_directory)
         for f in os.listdir(config['logdir']):
@@ -113,4 +120,8 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    print kitten
+    for k, v in kitten.items():
+
+        with open('%s.log' % os.path.join(config['logdir'], k), 'w') as f:
+            for oneline in v:
+                f.write('%s\n' % oneline)
