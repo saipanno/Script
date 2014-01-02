@@ -124,8 +124,8 @@ if __name__ == '__main__':
         with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
             f.write('%s: %s\n' % (address, x.get('code', '-1')))
 
-        for t, msgs in x.items():
-            if len(msgs) > 0:
+        for t, messages in x.items():
+            if messages != 'code' and len(messages) > 0:
                 with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
-                    for oneline in msgs:
+                    for oneline in messages:
                         f.write('%s\n' % oneline)
