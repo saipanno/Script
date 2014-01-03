@@ -39,14 +39,12 @@ DEFAULT_SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o 
 
 def logger_callback(x):
 
-    logdir = x['logdir']
-
-    with open(os.path.join(logdir, 'status.txt'), 'a') as f:
-        f.write('%s: %s\n' % (address, x.get('code', '-1')))
+    with open(os.path.join(x['logdir'], 'status.txt'), 'a') as f:
+        f.write('%s: %s\n' % (x['host'], x.get('code', '-1')))
 
     for t, messages in x.items():
-        if t != 'code' and len(messages) > 0:
-            with open(os.path.join(logdir, '%s_%s.log' % (address, t)), 'a') as f:
+        if t != 'code' and t != 'host' and t != 'logdir' and len(messages) > 0:
+            with open(os.path.join(x['logdir'], '%s_%s.log' % (x['host'], t)), 'a') as f:
                 for oneline in messages:
                     f.write('%s\n' % oneline)
 
@@ -68,6 +66,8 @@ def subprocess_caller(cmd):
 def remote_runner_by_ssh(host, templates, env, timeout, logdir):
 
     fruit = dict(code=-1,
+                 host=host,
+                 logdir=logdir,
                  message=list(),
                  error_message=list())
 
@@ -82,7 +82,6 @@ def remote_runner_by_ssh(host, templates, env, timeout, logdir):
             r = subprocess_caller('sudo ssh -n %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
 
         fruit['code'] = r['code']
-        fruit['logdir'] = logdir
         fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
         fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
 
