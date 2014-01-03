@@ -34,6 +34,9 @@ from jinja2 import Template
 from multiprocessing import Pool, Manager
 
 
+SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no'
+
+
 def subprocess_caller(cmd):
 
     try:
@@ -46,7 +49,7 @@ def subprocess_caller(cmd):
         return dict(output=output, error=error, code=code)
 
 
-def remote_runner_by_ssh(host, templates, env, share_dict):
+def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
 
     fruit = dict(code=-1,
                  message=list(),
@@ -57,7 +60,7 @@ def remote_runner_by_ssh(host, templates, env, share_dict):
         script_template = Template(template)
         script = script_template.render(env)
 
-        r = subprocess_caller('sudo ssh %s "%s"' % (host, script))
+        r = subprocess_caller('sudo ssh -o ConnectTimeout=%s %s %s "%s"' % (SSH_OPTION, timeout, host, script))
         fruit['code'] = r['code']
         fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
         fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
@@ -72,6 +75,8 @@ if __name__ == '__main__':
     parser.add_argument('-d', dest='logdir',
                         help='Syslog directory, (default: %(default)s)', default='%s/logging' % os.environ['HOME'])
     parser.add_argument('-r', dest='proc',
+                        help='Process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-t', dest='timeout',
                         help='Process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-f', dest='script',
                         help='Script or template script file')
@@ -118,7 +123,7 @@ if __name__ == '__main__':
     try:
         for host in hosts:
             pool.apply_async(remote_runner_by_ssh,
-                             (host, template_script, template_env.get(host, dict()), kitten))
+                             (host, template_script, template_env.get(host, dict()), config['timeout'], kitten))
 
         pool.close()
 
