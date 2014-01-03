@@ -45,6 +45,8 @@ def subprocess_caller(cmd):
         code = p.returncode
     except (OSError, ValueError), e:
         return dict(output=str(), error=e, code=1)
+    except (KeyboardInterrupt, SystemExit):
+        pass
     else:
         return dict(output=output, error=error, code=code)
 
@@ -61,7 +63,7 @@ def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
         script = script_template.render(env)
 
         if timeout is not None:
-            r = subprocess_caller('sudo ssh -n -o ConnectTimeout=%s %s %s "%s"' % (DEFAULT_SSH_OPTION, timeout, host, script))
+            r = subprocess_caller('sudo ssh -n %s -o ConnectTimeout=%s %s "%s"' % (DEFAULT_SSH_OPTION, timeout, host, script))
         else:
             r = subprocess_caller('sudo ssh -n %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
         fruit['code'] = r['code']
