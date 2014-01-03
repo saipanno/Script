@@ -80,7 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', dest='proc',
                         help='Process number, (default: %(default)s)', default=250, type=int)
     parser.add_argument('-t', dest='timeout',
-                        help='Ssh connect timeout, (default: %(default)s)', default=None)
+                        help='Ssh connect timeout')
     parser.add_argument('-f', dest='script',
                         help='Script or template script file')
     parser.add_argument('-v', dest='variable',
