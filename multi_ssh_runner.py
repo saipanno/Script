@@ -28,18 +28,27 @@ import os
 import sys
 import time
 import shutil
-import signal
 import argparse
 import subprocess
 from jinja2 import Template
-from multiprocessing import Pool, Manager
+from multiprocessing import Pool
 
 
 DEFAULT_SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no'
 
 
-def init_worker():
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
+def logger_callback(x):
+
+    logdir = x['logdir']
+
+    with open(os.path.join(logdir, 'status.txt'), 'a') as f:
+        f.write('%s: %s\n' % (address, x.get('code', '-1')))
+
+    for t, messages in x.items():
+        if t != 'code' and len(messages) > 0:
+            with open(os.path.join(logdir, '%s_%s.log' % (address, t)), 'a') as f:
+                for oneline in messages:
+                    f.write('%s\n' % oneline)
 
 
 def subprocess_caller(cmd):
@@ -56,7 +65,7 @@ def subprocess_caller(cmd):
         return dict(output=output, error=error, code=code)
 
 
-def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
+def remote_runner_by_ssh(host, templates, env, timeout, logdir):
 
     fruit = dict(code=-1,
                  message=list(),
@@ -71,11 +80,14 @@ def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
             r = subprocess_caller('sudo ssh -n %s -o ConnectTimeout=%s %s "%s"' % (DEFAULT_SSH_OPTION, timeout, host, script))
         else:
             r = subprocess_caller('sudo ssh -n %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
+
         fruit['code'] = r['code']
+        fruit['logdir'] = logdir
         fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
         fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
 
-    share_dict[host] = fruit
+    return fruit
+
 
 if __name__ == '__main__':
 
@@ -124,34 +136,17 @@ if __name__ == '__main__':
                 except ValueError:
                     pass
 
-    jobs = list()
-    manager = Manager()
-    kitten = manager.dict()
-
-    pool = Pool(processes=config['proc'], initializer=init_worker)
+    pool = Pool(processes=config['proc'])
 
     try:
         for host in hosts:
             pool.apply_async(remote_runner_by_ssh,
-                             (host, template_script, template_env.get(host, dict()), config['timeout'], kitten))
+                             (host, template_script, template_env.get(host, dict()), config['timeout'], config['logdir']),
+                             callback=logger_callback())
         pool.close()
         pool.join()
 
     except (KeyboardInterrupt, SystemExit):
         print('Caught KeyboardInterrupt, terminating workers')
         pool.terminate()
-
-        print('Wait all the worker quit')
         pool.join()
-
-    finally:
-
-        for address, x in kitten.items():
-            with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
-                f.write('%s: %s\n' % (address, x.get('code', '-1')))
-
-            for t, messages in x.items():
-                if t != 'code' and len(messages) > 0:
-                    with open(os.path.join(config['logdir'], '%s_%s.log' % (address, t)), 'a') as f:
-                        for oneline in messages:
-                            f.write('%s\n' % oneline)
