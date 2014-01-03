@@ -63,7 +63,7 @@ def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
         if timeout is not None:
             r = subprocess_caller('sudo ssh -n -o ConnectTimeout=%s %s %s "%s"' % (DEFAULT_SSH_OPTION, timeout, host, script))
         else:
-            r = subprocess_caller('sudo ssh -n -o %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
+            r = subprocess_caller('sudo ssh -n %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
         fruit['code'] = r['code']
         fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
         fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
