@@ -34,7 +34,7 @@ from jinja2 import Template
 from multiprocessing import Pool, Manager
 
 
-SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no'
+DEFAULT_SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no'
 
 
 def subprocess_caller(cmd):
@@ -61,9 +61,9 @@ def remote_runner_by_ssh(host, templates, env, timeout, share_dict):
         script = script_template.render(env)
 
         if timeout is not None:
-            r = subprocess_caller('sudo ssh -o ConnectTimeout=%s %s %s "%s"' % (SSH_OPTION, timeout, host, script))
+            r = subprocess_caller('sudo ssh -n -o ConnectTimeout=%s %s %s "%s"' % (DEFAULT_SSH_OPTION, timeout, host, script))
         else:
-            r = subprocess_caller('sudo ssh -o %s %s "%s"' % (SSH_OPTION, host, script))
+            r = subprocess_caller('sudo ssh -n -o %s %s "%s"' % (DEFAULT_SSH_OPTION, host, script))
         fruit['code'] = r['code']
         fruit['message'].extend([i for i in r['output'].split('\n') if i != ''])
         fruit['error_message'].extend([i for i in r['error'].split('\n') if i != ''])
