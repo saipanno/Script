@@ -28,6 +28,7 @@ import os
 import sys
 import time
 import shutil
+import signal
 import argparse
 import subprocess
 from jinja2 import Template
@@ -35,6 +36,10 @@ from multiprocessing import Pool, Manager
 
 
 DEFAULT_SSH_OPTION = '-o StrictHostKeyChecking=no -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no'
+
+
+def init_worker():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
 def subprocess_caller(cmd):
@@ -123,22 +128,23 @@ if __name__ == '__main__':
     manager = Manager()
     kitten = manager.dict()
 
-    pool = Pool(processes=config['proc'])
+    pool = Pool(processes=config['proc'], initializer=init_worker)
 
     try:
         for host in hosts:
             pool.apply_async(remote_runner_by_ssh,
                              (host, template_script, template_env.get(host, dict()), config['timeout'], kitten))
-
         pool.close()
+        pool.join()
 
     except (KeyboardInterrupt, SystemExit):
-        print "Caught KeyboardInterrupt, terminating workers"
+        print('Caught KeyboardInterrupt, terminating workers')
         pool.terminate()
 
-    finally:
-
+        print('Wait all the worker quit')
         pool.join()
+
+    finally:
 
         for address, x in kitten.items():
             with open(os.path.join(config['logdir'], 'status.txt'), 'a') as f:
