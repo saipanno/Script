@@ -141,7 +141,7 @@ if __name__ == '__main__':
         for host in hosts:
             pool.apply_async(remote_runner_by_ssh,
                              (host, template_script, template_env.get(host, dict()), config['timeout'], config['logdir']),
-                             callback=logger_callback())
+                             callback=logger_callback)
         pool.close()
         pool.join()
 
