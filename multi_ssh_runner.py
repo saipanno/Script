@@ -45,8 +45,8 @@ def logger_callback(x):
     for t, messages in x.items():
         if t != 'code' and t != 'host' and t != 'logdir' and len(messages) > 0:
             with open(os.path.join(x['logdir'], '%s_%s.log' % (x['host'], t)), 'a') as f:
-                for oneline in messages:
-                    f.write('%s\n' % oneline)
+                for i in messages:
+                    f.write('%s\n' % i)
 
 
 def subprocess_caller(cmd):

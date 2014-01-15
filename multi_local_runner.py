@@ -9,6 +9,7 @@
 #
 #    Created by Ruoyan Wong on 2013/10/10.
 
+
 import os
 import sys
 import time
@@ -44,8 +45,8 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('target', help='hostname or address file')
     parser.add_argument('-d', dest='logdir',  help='syslog directory, (default: %(default)s)', default='%s/logging' % HOME)
-    parser.add_argument('-r', dest='procs',   help='process number, (default: %(default)s)', default=250, type=int)
-    parser.add_argument('-f', dest='script', help='script or template script file')
+    parser.add_argument('-r', dest='proc',   help='process number, (default: %(default)s)', default=250, type=int)
+    parser.add_argument('-s', dest='script', help='script or template script file')
     parser.add_argument('-v', dest='variable', help='variable for template file')
     config = vars(parser.parse_args())
 
@@ -56,16 +57,16 @@ if __name__ == '__main__':
 
     manager = Manager()
     kitten = manager.dict()
-    pool = Pool(processes=config['procs'])
+    pool = Pool(processes=config['proc'])
 
     hosts = list()
     with open(config['target']) as f:
         for oneline in f:
             hosts.append(oneline.rstrip())
 
-    script = str()
+    script_template = str()
     with open(config['script']) as f:
-        script = '\n'.join(oneline.rstrip() for oneline in f)
+        script_template = '\n'.join(oneline.rstrip() for oneline in f)
 
     template_data = dict()
     if config['variable'] is not None and os.path.isfile(config['variable']):
@@ -85,7 +86,7 @@ if __name__ == '__main__':
             sys.exit(1)
 
     for host in hosts:
-        pool.apply_async(running_command, (script, template_data.get(host, dict()), kitten))
+        pool.apply_async(running_command, (script_template, template_data.get(host, dict()), kitten))
 
     pool.close()
     pool.join()
